@@ -11,6 +11,11 @@ import {dirname, join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {BANNER, SITE, FMT, PAIRS, CONVERSIONS, CONV_TABS, convSlug, convTitle, fmtNote, isLive, article, head, header, footer} from './shared.mjs';
 
+/* How many of the pages have code behind them. Counted rather than written
+   down, so the sentence on the hub cannot drift from the truth the way a
+   hand-typed number does. */
+const LIVE_COUNT = CONVERSIONS.filter(c => isLive(c.a, c.b)).length;
+
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 /* The illustration: two sheets, source behind and target in front, with a
@@ -216,7 +221,7 @@ function hub(){
 ${BANNER}
 <html lang="en">
 <head>
-${head({title:'Online PDF Converter — 74 formats, free and private | Quire', desc, url, prefix:'./', extraCss:['forms.css','convert.css']})}
+${head({title: `Online PDF Converter — ${CONVERSIONS.length} formats, free and private | Quire`, desc, url, prefix:'./', extraCss:['forms.css','convert.css']})}
 
 <script type="application/ld+json">
 {
@@ -237,7 +242,8 @@ ${header('./', {section:'converter'})}
   <div class="fhero">
     <div class="wrap">
       <h1>Convert anything to PDF, and back</h1>
-      <p class="chero-sub">${CONVERSIONS.length} conversions, all of them running in this tab. Your file is
+      <p class="chero-sub">${LIVE_COUNT} conversions run in this tab today, out of ${CONVERSIONS.length} the
+        site has a page for &mdash; the rest say plainly that they are not built yet. Your file is
         read by the browser and never sent anywhere.</p>
       <div class="fsearch">
         <svg viewBox="0 0 24 24"><circle cx="10.6" cy="10.6" r="6.6"/><path d="M20.5 20.5l-5.2-5.2"/></svg>

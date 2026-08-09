@@ -177,37 +177,6 @@ export async function imagesToPdf(items: Array<{bytes: Uint8Array; kind: string}
   return new Blob([(await doc.save()).slice() as BlobPart], {type: 'application/pdf'});
 }
 
-/* Pages as canvases, for the encoders that live on the other side.
- *
- * EPS and GIF are written by hand in convert.js, from a canvas — the browser
- * has no writer for either. Rather than move those encoders in here, or teach
- * this module a second copy of them, the pages come out as canvases and the
- * caller encodes them with the same code it uses for an ordinary picture.
- *
- * The caller must release each canvas: thirty A4 pages at 2× is about a
- * gigabyte if they are all held at once, which is why the other walks in this
- * file set width and height to zero as they go. */
-export async function pdfToCanvases(
-  bytes: Uint8Array, onPage?: (done: number, total: number) => void,
-): Promise<HTMLCanvasElement[]> {
-  const {task, doc} = await openPdf(bytes);
-  const out: HTMLCanvasElement[] = [];
-  try {
-    for (let n = 1; n <= doc.numPages; n++) {
-      const page = await doc.getPage(n);
-      const canvas = document.createElement('canvas');
-      await renderPage(page, canvas, {scale: 2, dpr: 1}).done;
-      out.push(canvas);
-      onPage?.(n, doc.numPages);
-      await new Promise(r => setTimeout(r, 0));
-    }
-  } finally {
-    await task.destroy().catch(() => {});
-  }
-  if (!out.length) refuse('That PDF has no pages.');
-  return out;
-}
-
 /* An Illustrator file has been a PDF since version 9.
  *
  * Adobe writes AI as a PDF with its own editable artwork tucked into a private

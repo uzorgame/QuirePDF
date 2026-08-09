@@ -481,29 +481,6 @@ async function fromPdf(file, dst, onStep) {
     return blob;
   }
 
-  /* EPS and GIF have no browser writer, and ours takes a canvas. The pages come
-     back as canvases and go through the very encoders an ordinary picture uses,
-     so a page and a photograph are written by the same code. */
-  if (dst === 'eps' || dst === 'gif') {
-    const canvases = await eng.pdfToCanvases(bytes, onStep);
-    const pad = String(canvases.length).length;
-    const sheets = [];
-    for (const [i, canvas] of canvases.entries()) {
-      const blob = dst === 'eps' ? await toEps(canvas, false, file) : await toGif(canvas);
-      sheets.push({
-        name: canvases.length === 1
-          ? `${base}.${dst}`
-          : `${base}-${String(i + 1).padStart(pad, '0')}.${dst}`,
-        blob,
-      });
-      canvas.width = canvas.height = 0;
-    }
-    if (sheets.length === 1) return sheets[0].blob;
-    const bundle = await eng.zip(sheets);
-    bundle.multi = sheets.length;
-    return bundle;
-  }
-
   /* Three encoders behind one shape. BMP and TIFF have no browser writer so
      they go through ours; JPG and PNG are a canvas.toBlob. All of them hand
      back one file per page and are bundled the same way below. */

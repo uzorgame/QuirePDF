@@ -159,8 +159,9 @@ const LIVE = new Set([
   'tiff-to-pdf',
   /* Not a conversion at all: an Illustrator file has been a PDF since v9 */
   'ai-to-pdf',
-  /* pdf.js out, our own writers in: RTF is text, EPS and GIF are canvases */
-  'pdf-to-rtf', 'pdf-to-eps', 'pdf-to-gif',
+  /* pdf.js out, our own writer in — the words and their line breaks are what
+     a PDF can honestly give, and every processor since 1987 opens an RTF */
+  'pdf-to-rtf',
   /* Deliberately absent: html-to-pdf, because printing markup as text is not
      what anyone means by it and rendering a page properly needs a browser
      engine we do not control; tiff-to-pdf, because no engine but Safari decodes
@@ -177,9 +178,9 @@ export const CONVERSIONS = [
   P('pdf','epub','from'), P('pdf','svg','from'), P('pdf','txt','from'),
   P('pdf','jpeg','from'), P('pdf','html','from'), P('pdf','image','from'),
   P('pdf','pages','from'), P('pdf','picture','from'), P('pdf','tiff','from'),
-  P('pdf','eps','from'), P('pdf','psd','from'), P('pdf','xls','from'),
+  P('pdf','psd','from'), P('pdf','xls','from'),
   P('pdf','xlsx','from'), P('pdf','mobi','from'), P('pdf','bmp','from'),
-  P('pdf','rtf','from'), P('pdf','gif','from'), P('pdf','azw3','from'),
+  P('pdf','rtf','from'), P('pdf','azw3','from'),
 
   /* ── to PDF ── */
   P('image','pdf','to',true), P('word','pdf','to',true), P('jpg','pdf','to',true),
