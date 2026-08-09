@@ -10,7 +10,8 @@
     "site": "node --experimental-strip-types tools/build.mjs",
     "check": "node tools/check.mjs && tsc --noEmit",
     "serve": "vite preview --outDir . --port 5191",
-    "previews": "node --experimental-strip-types tools/build-previews.mjs --force"
+    "previews": "node --experimental-strip-types tools/build-previews.mjs --force",
+    "og": "node tools/og-card.mjs"
   },
   "dependencies": {
     "@pdf-lib/fontkit": "^1.1.1",
