@@ -169,6 +169,13 @@ const LIVE = new Set([
   'pages-to-pdf',
   /* Plain-text formats with a grammar of their own */
   'html-to-pdf', 'dxf-to-pdf', 'svg-to-dxf',
+  /* A document into a picture is laid out as a PDF first and rasterised by the
+     renderer that already draws pages on screen, rather than by a second text
+     engine that would have to agree with the first. */
+  'docx-to-jpg', 'word-to-jpg', 'html-to-jpg',
+  /* The browser decodes the video; the frames are seeked and drawn one at a
+     time, because no engine will simply hand them over. */
+  'video-to-gif', 'mp4-to-gif',
   /* Deliberately absent: everything that needs a format with no browser reader
      at all — DWG, CDR, PSD, PUB, HWP and the binary PPT — and PDF to Pages,
      whose target format Apple has never documented. Those keep their pages and

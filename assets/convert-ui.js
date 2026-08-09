@@ -55,9 +55,14 @@ function setUp(zone) {
       : `${(blob.size / 1048576).toFixed(1)} MB`;
 
     const note = document.createElement('p');
+    /* A conversion that could not take the whole file says so here. A GIF is
+       cut to a few seconds because the format has no motion compensation and
+       a long clip becomes hundreds of megabytes — but a file that quietly
+       came back shorter than it went in is the kind of surprise somebody
+       finds out about after sending it on. */
     note.textContent = blob.multi
       ? `${blob.multi} pages · ${size} zipped. Nothing was uploaded.`
-      : `Converted · ${size}. Nothing was uploaded.`;
+      : `Converted · ${size}${blob.note ? ` · ${blob.note}` : ''}. Nothing was uploaded.`;
 
     out.replaceChildren(note, a);
     /* The link is only alive while this page is. Saying so beats a reader

@@ -252,20 +252,23 @@ function ascii85(bytes) {
    No browser can encode GIF, so this writes one: quantise to 256 colours,
    then LZW-compress the indices. One frame only — turning a still image into
    an animation is not a thing a converter should invent. */
-async function toGif(canvas) {
+/* A 6×6×6 colour cube plus a 40-step grey ramp. A median cut would look better
+   on a photograph, but this is deterministic, fast, and good enough that the
+   difference only shows on gradients. Built once: every frame of an animation
+   shares one global table, which is also what keeps the file small. */
+const GIF_PALETTE = (() => {
+  const p = [];
+  for (let r = 0; r < 6; r++) for (let g = 0; g < 6; g++) for (let b = 0; b < 6; b++) {
+    p.push([r * 51, g * 51, b * 51]);
+  }
+  for (let i = 0; i < 40; i++) { const v = Math.round(i * 255 / 39); p.push([v, v, v]); }
+  while (p.length < 256) p.push([0, 0, 0]);
+  return p;
+})();
+
+function quantise(canvas) {
   const {width: w, height: h} = canvas;
   const px = canvas.getContext('2d').getImageData(0, 0, w, h).data;
-
-  /* A 6×6×6 colour cube plus a 40-step grey ramp. A median cut would look
-     better on a photograph, but this is deterministic, fast, and good enough
-     that the difference only shows on gradients. */
-  const palette = [];
-  for (let r = 0; r < 6; r++) for (let g = 0; g < 6; g++) for (let b = 0; b < 6; b++) {
-    palette.push([r * 51, g * 51, b * 51]);
-  }
-  for (let i = 0; i < 40; i++) { const v = Math.round(i * 255 / 39); palette.push([v, v, v]); }
-  while (palette.length < 256) palette.push([0, 0, 0]);
-
   const idx = new Uint8Array(w * h);
   for (let i = 0, p = 0; i < px.length; i += 4, p++) {
     const a = px[i + 3] / 255;
@@ -279,17 +282,129 @@ async function toGif(canvas) {
       idx[p] = Math.round(r / 51) * 36 + Math.round(g / 51) * 6 + Math.round(b / 51);
     }
   }
+  return idx;
+}
 
+/* One frame is a still image; several are an animation. The difference in the
+   file is two blocks: a Netscape application extension, which is the only way
+   a viewer is told to loop at all, and a graphic control extension before each
+   frame carrying its delay. */
+function gifBytes(frames, delayCs) {
+  const {width: w, height: h} = frames[0];
   const out = [];
-  const push = (...b) => out.push(...b);
+  /* Appended one at a time rather than spread into push(). The LZW stream for
+     a large frame runs to hundreds of thousands of bytes, and spreading an
+     array that size into a call overflows the argument stack. */
+  const cat = (arr) => { for (let i = 0; i < arr.length; i++) out.push(arr[i]); };
+  const push = (...b) => cat(b);
   const str = (s) => { for (const c of s) out.push(c.charCodeAt(0)); };
+
   str('GIF89a');
   push(w & 255, w >> 8, h & 255, h >> 8, 0xF7, 0, 0);       // logical screen, global table of 256
-  for (const [r, g, b] of palette) push(r, g, b);
-  push(0x2C, 0, 0, 0, 0, w & 255, w >> 8, h & 255, h >> 8, 0);  // image descriptor
-  push(...lzw(idx, 8));
-  push(0x3B);                                                    // trailer
-  return new Blob([new Uint8Array(out)], {type: 'image/gif'});
+  for (const [r, g, b] of GIF_PALETTE) push(r, g, b);
+
+  if (frames.length > 1) {
+    push(0x21, 0xFF, 11);
+    str('NETSCAPE2.0');
+    push(3, 1, 0, 0, 0);                                     // sub-block: loop forever
+  }
+  for (const frame of frames) {
+    if (frames.length > 1) {
+      push(0x21, 0xF9, 4, 0x04, delayCs & 255, delayCs >> 8, 0, 0);   // dispose to background
+    }
+    push(0x2C, 0, 0, 0, 0, w & 255, w >> 8, h & 255, h >> 8, 0);      // image descriptor
+    cat(lzw(quantise(frame), 8));
+  }
+  push(0x3B);                                                        // trailer
+  return new Uint8Array(out);
+}
+
+async function toGif(canvas) {
+  return new Blob([gifBytes([canvas], 0)], {type: 'image/gif'});
+}
+
+/* ── video to GIF ─────────────────────────────────────────────────────
+ * The browser already decodes video; what it will not do is hand over the
+ * frames, so they are seeked one at a time and drawn onto a canvas. That is
+ * slower than reading the file directly, and it is the only way that works in
+ * every engine without shipping a demuxer.
+ *
+ * The limits below are the point of the feature rather than a compromise in
+ * it. A GIF stores every frame as a full 256-colour image with no motion
+ * compensation, so a minute of 1080p becomes a file of several hundred
+ * megabytes that no chat app will accept and no browser will finish building.
+ * Six seconds at 8 frames a second, 480 pixels wide, lands around a megabyte —
+ * which is what a GIF is actually for. A longer clip is cut, and the caller
+ * is told how much was taken rather than left to wonder. */
+const GIF_MAX_SECONDS = 6, GIF_FPS = 8, GIF_MAX_WIDTH = 480;
+
+async function videoToGif(file, onStep) {
+  const head = new Uint8Array(await file.slice(0, 12).arrayBuffer());
+  const brand = String.fromCharCode(...head.slice(4, 8));
+  const webm = head[0] === 0x1A && head[1] === 0x45 && head[2] === 0xDF && head[3] === 0xA3;
+  if (brand !== 'ftyp' && !webm) {
+    refuse('That file is not a video the browser recognises. MP4, WEBM and MOV work here.');
+  }
+
+  const url = URL.createObjectURL(file);
+  const video = document.createElement('video');
+  video.muted = true;
+  video.playsInline = true;
+  video.preload = 'auto';
+
+  try {
+    await new Promise((ok, no) => {
+      video.onloadedmetadata = ok;
+      video.onerror = () => no(new Refused('The browser could not decode that video. '
+        + 'It may use a codec this browser has no licence for — H.265 and ProRes are the '
+        + 'usual ones. Re-encode it as H.264 MP4 first.'));
+      video.src = url;
+    });
+
+    if (!video.videoWidth || !video.videoHeight) {
+      refuse('That file has a sound track but no picture, so there are no frames to put in a GIF.');
+    }
+    const span = video.duration;
+    if (!isFinite(span) || span <= 0) {
+      refuse('That video does not say how long it is, which usually means the file is '
+        + 'truncated or still being written.');
+    }
+
+    const scale = Math.min(1, GIF_MAX_WIDTH / video.videoWidth);
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(video.videoWidth * scale));
+    canvas.height = Math.max(1, Math.round(video.videoHeight * scale));
+    const ctx = canvas.getContext('2d');
+
+    const taken = Math.min(span, GIF_MAX_SECONDS);
+    const count = Math.max(1, Math.round(taken * GIF_FPS));
+    const frames = [];
+    for (let n = 0; n < count; n++) {
+      /* Held just inside the end: seeking to exactly duration lands past the
+         last frame in several engines and draws nothing. */
+      const at = Math.min(taken * (n / count), span - 1e-3);
+      await new Promise((ok, no) => {
+        video.onseeked = ok;
+        video.onerror = () => no(new Refused('The video stopped decoding partway through.'));
+        video.currentTime = at;
+      });
+      const shot = document.createElement('canvas');
+      shot.width = canvas.width;
+      shot.height = canvas.height;
+      shot.getContext('2d').drawImage(video, 0, 0, shot.width, shot.height);
+      frames.push(shot);
+      onStep?.(n + 1, count);
+      /* Yields between frames so the page can paint its progress. */
+      await new Promise(r => setTimeout(r, 0));
+    }
+
+    const blob = new Blob([gifBytes(frames, Math.round(100 / GIF_FPS))], {type: 'image/gif'});
+    if (span > GIF_MAX_SECONDS) blob.note = `First ${GIF_MAX_SECONDS} seconds of ${span.toFixed(1)}.`;
+    return blob;
+  } finally {
+    video.src = '';
+    URL.revokeObjectURL(url);
+  }
 }
 
 function lzw(data, minCode) {
@@ -444,10 +559,19 @@ const BINARY_IN = {excel: 'excel', xls: 'excel', xlsx: 'excel', epub: 'epub',
                    odt: 'odt', pages: 'pages',
                    rtf: 'rtf', html: 'html', dxf: 'dxf'};
 
+/* Documents that become pictures. There is no second renderer for these: the
+   document is laid out as a PDF by the reader it already has, and the PDF is
+   rasterised by the one that already draws pages on screen. Going straight
+   from Word to a JPEG would mean a third text layout engine agreeing with the
+   other two, which is how two of them end up disagreeing. */
+const VIA_PDF = {docx: 'docx', word: 'docx', html: 'html'};
+
 export async function convert(file, src, dst, onStep) {
   /* ── the PDF and document routes ── */
   if (src === 'pdf') return fromPdf(file, dst, onStep);
   if (dst === 'pdf') return toPdf(file, src);
+  if (src === 'video' || src === 'mp4') return videoToGif(file, onStep);
+  if (VIA_PDF[src] && PICTURE_OUT.has(dst)) return viaPdf(file, src, dst, onStep);
 
   const kind = await sniff(file);
   if (!kind) {
@@ -497,7 +621,28 @@ export async function convert(file, src, dst, onStep) {
   }
 }
 
+const PICTURE_OUT = new Set(['jpg', 'jpeg', 'png', 'image', 'picture']);
+
+async function viaPdf(file, src, dst, onStep) {
+  const eng = await engine();
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  const base = file.name.replace(/\.[^.]+$/, '');
+  const laid = VIA_PDF[src] === 'docx' ? await eng.docxToPdf(bytes) : await eng.htmlToPdf(bytes);
+  return bundleSheets(eng, await eng.pdfToImages(
+    new Uint8Array(await laid.arrayBuffer()),
+    dst === 'png' ? 'image/png' : 'image/jpeg', base, onStep));
+}
+
 /* ── PDF in ───────────────────────────────────────────────────────────── */
+
+/* A single page comes back as the picture. Several come back as one zip,
+   because thirty save dialogs in a row is not a download. */
+async function bundleSheets(eng, sheets) {
+  if (sheets.length === 1) return sheets[0].blob;
+  const bundle = await eng.zip(sheets);
+  bundle.multi = sheets.length;
+  return bundle;
+}
 
 async function fromPdf(file, dst, onStep) {
   if (await sniff(file) !== 'pdf') {
@@ -532,13 +677,7 @@ async function fromPdf(file, dst, onStep) {
     dst === 'bmp' ? await eng.pdfToBmp(bytes, base, onStep)
     : dst === 'tiff' ? await eng.pdfToTiff(bytes, base, onStep)
     : await eng.pdfToImages(bytes, dst === 'png' ? 'image/png' : 'image/jpeg', base, onStep);
-
-  /* A single page comes back as the picture. Several come back as one zip,
-     because thirty save dialogs in a row is not a download. */
-  if (sheets.length === 1) return sheets[0].blob;
-  const bundle = await eng.zip(sheets);
-  bundle.multi = sheets.length;
-  return bundle;
+  return bundleSheets(eng, sheets);
 }
 
 /* ── PDF out ──────────────────────────────────────────────────────────── */
