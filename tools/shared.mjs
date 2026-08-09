@@ -164,13 +164,28 @@ const LIVE = new Set([
   'pdf-to-word', 'word-to-pdf', 'wps-to-pdf', 'image-to-word',
   /* pdf.js out, our own writer in — the words and their line breaks are what
      a PDF can honestly give, and every processor since 1987 opens an RTF */
-  'pdf-to-rtf',
-  /* Deliberately absent: html-to-pdf, because printing markup as text is not
-     what anyone means by it and rendering a page properly needs a browser
-     engine we do not control; tiff-to-pdf, because no engine but Safari decodes
-     TIFF; and everything that needs a format with no browser reader at all —
-     DWG, CDR, PSD, AI, PUB, HWP, WPS, Pages, and PDF to Word. Those keep their
-     pages and say plainly that the conversion is not built. */
+  'pdf-to-rtf', 'rtf-to-pdf',
+  /* The rest of the zip-of-XML family. `powerpoint` is the same .pptx package
+     under the name people search for; `ppt` is not here, because the
+     three-letter extension means the 1997 binary format and reading that is a
+     different job we have not done. */
+  'pptx-to-pdf', 'powerpoint-to-pdf', 'odt-to-pdf', 'pdf-to-pptx',
+  'pdf-to-epub', 'image-to-excel',
+  /* Pages keeps a PDF of itself inside the bundle for Quick Look, so this is a
+     lookup rather than a parse — Apple's own format is not readable here and
+     is not attempted. */
+  'pages-to-pdf',
+  /* Plain-text formats with a grammar of their own */
+  'html-to-pdf', 'dxf-to-pdf', 'svg-to-dxf',
+  /* Deliberately absent: everything that needs a format with no browser reader
+     at all — DWG, CDR, PSD, PUB, HWP and the binary PPT — and PDF to Pages,
+     whose target format Apple has never documented. Those keep their pages and
+     say plainly that the conversion is not built.
+
+     html-to-pdf is here now, but on narrower terms than the name suggests: it
+     lays out the document's readable content, and does not run CSS. Rendering
+     a web page as designed needs a browser engine, and the one we are inside
+     will not lend it out. The page says so. */
 ]);
 export const isLive = (a, b) => LIVE.has(`${a}-to-${b}`);
 

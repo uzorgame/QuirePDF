@@ -412,6 +412,9 @@ async function toSvg(canvas) {
 const EXT = {jpg: 'jpg', jpeg: 'jpg', png: 'png', webp: 'webp', gif: 'gif',
              ico: 'ico', eps: 'eps', svg: 'svg', avif: 'avif', bmp: 'bmp',
              pdf: 'pdf', txt: 'txt', rtf: 'rtf', word: 'docx', docx: 'docx',
+             /* The friendly names people search for are not file extensions:
+                nobody's operating system opens a file called "report.excel". */
+             excel: 'xlsx', powerpoint: 'pptx', pptx: 'pptx', epub: 'epub',
              image: 'jpg', picture: 'jpg'};
 
 /* The heavy module carries pdf.js, pdf-lib and the HEIC decoder. It is fetched
@@ -428,8 +431,18 @@ const TEXTUAL = {txt: 'text', md: 'text', csv: 'csv'};
 const BINARY_IN = {excel: 'excel', xls: 'excel', xlsx: 'excel', epub: 'epub',
                    tiff: 'tiff', ai: 'ai',
                    /* A .docx is a zip of XML; WPS Office writes the same thing
-                      under its own extension, so it reads through the same door. */
-                   word: 'docx', docx: 'docx', wps: 'docx'};
+                      under its own extension, so it reads through the same door.
+                      So do .pptx, .odt and .pages — four office formats, four
+                      parsers, one shape of file underneath all of them.
+
+                      `ppt` is deliberately not here. The three-letter extension
+                      is the 1997 binary format, which is an OLE compound file
+                      and a different job entirely; pptxToPdf recognises one and
+                      says so rather than failing obscurely. */
+                   word: 'docx', docx: 'docx', wps: 'docx',
+                   pptx: 'pptx', powerpoint: 'pptx',
+                   odt: 'odt', pages: 'pages',
+                   rtf: 'rtf', html: 'html', dxf: 'dxf'};
 
 export async function convert(file, src, dst, onStep) {
   /* ── the PDF and document routes ── */
@@ -449,16 +462,26 @@ export async function convert(file, src, dst, onStep) {
       + (CROSS[kind] ? ` Try ${CROSS[kind]} instead.` : ''));
   }
 
+  /* Vector out of vector, so this one must not touch a canvas: rasterising an
+     SVG to trace it back into CAD geometry would throw away the exact curves
+     the file already has. */
+  if (dst === 'dxf') {
+    const {svgToDxf} = await engine();
+    return svgToDxf(await file.text());
+  }
+
   const canvas = await toCanvas(file, kind);
   guardSize(canvas);
 
-  /* A picture into a Word file. It goes through the engine rather than the
-     switch below, because the output is a zip of XML and not a re-encode of
-     the canvas — and because the engine is where JSZip already lives. */
-  if (dst === 'word') {
-    const {imageToWord} = await engine();
+  /* A picture into an Office document. These go through the engine rather than
+     the switch below, because the output is a zip of XML and not a re-encode
+     of the canvas — and because the engine is where JSZip already lives. */
+  if (dst === 'word' || dst === 'excel') {
+    const eng = await engine();
     const png = new Uint8Array(await (await blobOf(canvas, 'image/png')).arrayBuffer());
-    return imageToWord(png, 'png', canvas.width, canvas.height);
+    return dst === 'word'
+      ? eng.imageToWord(png, 'png', canvas.width, canvas.height)
+      : eng.imageToExcel(png, 'png', canvas.width, canvas.height);
   }
 
   switch (dst) {
@@ -489,8 +512,15 @@ async function fromPdf(file, dst, onStep) {
   if (dst === 'html') return eng.pdfToHtml(bytes, base);
   if (dst === 'rtf') return eng.pdfToRtf(bytes);
   if (dst === 'word') return eng.pdfToWord(bytes);
-  if (dst === 'xls' || dst === 'xlsx') {
-    const {blob, rows} = await eng.pdfToSheet(bytes, dst);
+  if (dst === 'pptx') return eng.pdfToPptx(bytes, base);
+  if (dst === 'epub') return eng.pdfToEpub(bytes, base, onStep);
+  /* 'excel' as well as the two extensions. The page called "PDF to Excel" was
+     reaching the picture branch below and handing back JPEGs of the pages,
+     because the only names checked here were the ones ending in .xls. */
+  if (dst === 'xls' || dst === 'xlsx' || dst === 'excel') {
+    /* SheetJS is given a workbook type, not a page name, and "excel" is not
+       one — it threw rather than writing a file. */
+    const {blob, rows} = await eng.pdfToSheet(bytes, dst === 'xls' ? 'xls' : 'xlsx');
     blob.rows = rows;
     return blob;
   }
@@ -522,6 +552,12 @@ async function toPdf(file, src) {
     switch (BINARY_IN[src]) {
       case 'excel': return eng.excelToPdf(bytes);
       case 'docx':  return eng.docxToPdf(bytes);
+      case 'pptx':  return eng.pptxToPdf(bytes);
+      case 'odt':   return eng.odtToPdf(bytes);
+      case 'pages': return eng.pagesToPdf(bytes);
+      case 'rtf':   return eng.rtfToPdf(bytes);
+      case 'html':  return eng.htmlToPdf(bytes);
+      case 'dxf':   return eng.dxfToPdf(bytes);
       case 'tiff':  return eng.tiffToPdf(bytes);
       case 'ai':    return eng.aiToPdf(bytes);
       default:      return eng.epubToPdf(bytes);

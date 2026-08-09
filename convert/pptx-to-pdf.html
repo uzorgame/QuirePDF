@@ -157,9 +157,9 @@
     </div>
 
     <div class="up">
-      <label class="up-in">
+      <label class="up-in" data-convert="pptx>pdf">
         <input type="file" accept=".pptx" aria-label="Choose a PPTX file to convert">
-        <h3>Upload your file</h3>
+        <h3>Choose a PPTX file</h3>
         <svg class="up-art" width="300" height="196" viewBox="0 0 300 196" fill="none" role="img"
      aria-label="PPTX converted to PDF">
   <path d="M60 40C72 6 196 -2 220 26" stroke="#E5252A" stroke-width="2.4"
@@ -195,14 +195,9 @@
         <p class="up-drop">Drop files here</p>
         <div class="up-or">OR</div>
         <span class="btn btn--primary btn--lg">Convert to PDF</span>
-        <p class="up-fine">Read locally, never uploaded</p>
+        <p class="up-fine">Converted in this tab · nothing is uploaded</p>
       </label>
-      <div class="conv-out conv-out--soon">
-        <p>The PPTX to PDF conversion is not built yet. This one needs work a browser
-        cannot do on its own, so it is honest about that rather than accepting your
-        file and giving nothing back. <a href="../converter.html">The image converters</a>
-        all run for real today.</p>
-      </div>
+      <div class="conv-out" id="convOut" hidden aria-live="polite"></div>
     </div>
   </div>
 
@@ -327,6 +322,6 @@
 </footer>
 
 <script type="module" src="../assets/site.js"></script>
-
+<script type="module" src="../assets/convert-ui.js"></script>
 </body>
 </html>

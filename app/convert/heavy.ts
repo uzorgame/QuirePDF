@@ -1044,3 +1044,39 @@ export async function pdfToBmp(
   }
   return out;
 }
+
+/* What a file actually is, when it turned out not to be the one the page was
+   expecting. Only the arrivals common enough to earn a sentence — renaming a
+   file is how most people first try to convert one, so "that is a PDF" is a
+   more useful answer than "that archive does not unpack". */
+export function looksLike(bytes: Uint8Array): string | null {
+  const head = new TextDecoder('latin1').decode(bytes.slice(0, 8));
+  if (head.startsWith('%PDF')) return 'a PDF';
+  if (head.startsWith('{\\rtf')) return 'an RTF document';
+  if (head.startsWith('%!PS')) return 'a PostScript or EPS file';
+  if (head.startsWith('\x89PNG')) return 'a PNG image';
+  if (bytes[0] === 0xff && bytes[1] === 0xd8) return 'a JPEG image';
+  if (head.startsWith('II*\0') || head.startsWith('MM\0*')) return 'a TIFF image';
+  if (head.trimStart().startsWith('<')) return 'a markup file — HTML or XML';
+  return null;
+}
+
+/* ── the formats that carry their own parser ──────────────────────────────
+ *
+ * A reader that runs to hundreds of lines lives in its own module and is
+ * re-exported here, so the engine stays a single import to everything that
+ * calls it and only its inside is divided.
+ *
+ * Each of these imports Refused from this module while this module re-exports
+ * it, which is a cycle. It is harmless: none of them touches Refused until a
+ * conversion actually runs, long after every module body has finished. */
+export {pptxToPdf} from './formats/pptx.ts';
+export {odtToPdf} from './formats/odt.ts';
+export {rtfToPdf} from './formats/rtf.ts';
+export {htmlToPdf} from './formats/html.ts';
+export {pagesToPdf} from './formats/pages.ts';
+export {dxfToPdf} from './formats/dxf.ts';
+export {svgToDxf} from './formats/svgDxf.ts';
+export {pdfToPptx} from './formats/pptxOut.ts';
+export {pdfToEpub} from './formats/epubOut.ts';
+export {imageToExcel} from './formats/imageExcel.ts';
