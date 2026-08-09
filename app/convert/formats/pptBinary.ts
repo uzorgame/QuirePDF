@@ -332,12 +332,10 @@ export async function pptToPdf(bytes: Uint8Array): Promise<Blob> {
       + 'in PowerPoint, remove the password, and save it again.');
   }
 
-  const docEntry = ole.entries.find(e => e.type === 2 && e.name === 'PowerPoint Document');
-  if (!docEntry) {
-    refuse('That file has the shape of an old Office document but no "PowerPoint Document" '
+  const docEntry = ole.entries.find(e => e.type === 2 && e.name === 'PowerPoint Document')
+    ?? refuse('That file has the shape of an old Office document but no "PowerPoint Document" '
       + 'stream inside it — it may be a Word or Excel file from the same era rather than a '
       + 'presentation.');
-  }
 
   const groups = await slideGroupsOf(ole.read(docEntry));
   const text = groups

@@ -1080,3 +1080,5 @@ export {svgToDxf} from './formats/svgDxf.ts';
 export {pdfToPptx} from './formats/pptxOut.ts';
 export {pdfToEpub} from './formats/epubOut.ts';
 export {imageToExcel} from './formats/imageExcel.ts';
+export {pptToPdf} from './formats/pptBinary.ts';
+export {pdfToSvgSheets, pdfToDxfSheets} from './formats/vector.ts';

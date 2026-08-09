@@ -176,12 +176,19 @@ const LIVE = new Set([
   /* The browser decodes the video; the frames are seeked and drawn one at a
      time, because no engine will simply hand them over. */
   'video-to-gif', 'mp4-to-gif',
-  /* Deliberately absent: everything that needs a format with no browser reader
-     at all — DWG, CDR, PSD, PUB, HWP and the binary PPT — and PDF to Pages,
-     whose target format Apple has never documented. Those keep their pages and
-     say plainly that the conversion is not built.
+  /* pdf.js reports the drawing operators, not just the words, so the vectors
+     in a PDF can come out as vectors instead of as a picture of them. */
+  'pdf-to-svg', 'pdf-to-dxf',
+  /* The 1997 binary PowerPoint: an OLE compound file with its own record
+     stream. Text only, and it says so. */
+  'ppt-to-pdf',
+  /* Deliberately absent: DWG, and only DWG. It is AutoCAD's own closed binary,
+     the last conversion on this list that cannot be done honestly in a browser,
+     and its page stays and says so rather than disappearing — people do turn up
+     holding one, and DXF, which every CAD program can export instead, is right
+     next to it.
 
-     html-to-pdf is here now, but on narrower terms than the name suggests: it
+     html-to-pdf is here, but on narrower terms than the name suggests: it
      lays out the document's readable content, and does not run CSS. Rendering
      a web page as designed needs a browser engine, and the one we are inside
      will not lend it out. The page says so. */

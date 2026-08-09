@@ -550,12 +550,11 @@ const BINARY_IN = {excel: 'excel', xls: 'excel', xlsx: 'excel', epub: 'epub',
                       So do .pptx, .odt and .pages — four office formats, four
                       parsers, one shape of file underneath all of them.
 
-                      `ppt` is deliberately not here. The three-letter extension
-                      is the 1997 binary format, which is an OLE compound file
-                      and a different job entirely; pptxToPdf recognises one and
-                      says so rather than failing obscurely. */
+                      `ppt` is the 1997 binary format and shares none of that:
+                      an OLE compound file with its own record stream, read by
+                      a parser written for it alone. */
                    word: 'docx', docx: 'docx', wps: 'docx',
-                   pptx: 'pptx', powerpoint: 'pptx',
+                   pptx: 'pptx', powerpoint: 'pptx', ppt: 'ppt',
                    odt: 'odt', pages: 'pages',
                    rtf: 'rtf', html: 'html', dxf: 'dxf'};
 
@@ -659,6 +658,8 @@ async function fromPdf(file, dst, onStep) {
   if (dst === 'word') return eng.pdfToWord(bytes);
   if (dst === 'pptx') return eng.pdfToPptx(bytes, base);
   if (dst === 'epub') return eng.pdfToEpub(bytes, base, onStep);
+  if (dst === 'dxf') return bundleSheets(eng, await eng.pdfToDxfSheets(bytes, base));
+  if (dst === 'svg') return bundleSheets(eng, await eng.pdfToSvgSheets(bytes, base));
   /* 'excel' as well as the two extensions. The page called "PDF to Excel" was
      reaching the picture branch below and handing back JPEGs of the pages,
      because the only names checked here were the ones ending in .xls. */
@@ -692,6 +693,7 @@ async function toPdf(file, src) {
       case 'excel': return eng.excelToPdf(bytes);
       case 'docx':  return eng.docxToPdf(bytes);
       case 'pptx':  return eng.pptxToPdf(bytes);
+      case 'ppt':   return eng.pptToPdf(bytes);
       case 'odt':   return eng.odtToPdf(bytes);
       case 'pages': return eng.pagesToPdf(bytes);
       case 'rtf':   return eng.rtfToPdf(bytes);
