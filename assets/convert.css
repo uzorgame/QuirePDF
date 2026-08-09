@@ -1,0 +1,78 @@
+/* Converter landing pages. One layout, ten instances — the only things that
+   change per page are the copy and the two colours in the illustration.
+   Everything here is prefixed `conv-` or `up-`; the section headers, steps and
+   tick lists come from site.css and are not restated. */
+
+.conv-hero{display:grid;grid-template-columns:1fr 1.05fr;gap:56px;align-items:center;
+           padding:64px 0 72px}
+
+.conv-copy h1{font-size:clamp(32px,4.4vw,46px);line-height:1.08;font-weight:600;
+              letter-spacing:-.035em}
+.conv-copy .conv-tag{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;
+                     color:var(--ink-2);background:var(--s-1);padding:6px 13px;
+                     border-radius:99px;margin-bottom:20px}
+.conv-copy .conv-tag i{width:6px;height:6px;border-radius:50%;background:var(--acc);flex:none}
+.conv-copy h2{margin-top:14px;font-size:17px;font-weight:500;color:var(--ink-2);
+              letter-spacing:-.015em}
+
+/* ── the upload card ───────────────────────────────── */
+.up{border-radius:var(--r-lg);box-shadow:var(--ring);padding:14px;background:var(--bg)}
+/* display:block is load-bearing. This is a <label>, so it is inline by default,
+   and an inline box with a border is split across line boxes — the dashed frame
+   comes apart into fragments and the background paints behind the text instead
+   of around the card. */
+.up-in{display:block;border:1.5px dashed var(--line-2);border-radius:var(--r-lg);
+       padding:34px 28px 30px;text-align:center;position:relative;
+       transition:background .18s var(--ease),border-color .18s var(--ease)}
+.up-in.over,.up-in:hover{background:var(--acc-soft);border-color:var(--acc)}
+.up-in input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.up h3{font-size:19px;font-weight:600;letter-spacing:-.025em}
+.up-art{margin:20px auto 18px;display:block}
+.up-drop{font-size:15.5px;color:var(--ink-2)}
+.up-or{display:flex;align-items:center;gap:16px;margin:18px 0;color:var(--ink-3);font-size:13px}
+.up-or::before,.up-or::after{content:'';flex:1;height:1px;background:var(--line)}
+/* The button is a <span>, so it is inline-flex; `margin: 0 auto` cannot centre
+   an inline box. Making it a block-level flex box is what actually centres it. */
+.up .btn{display:flex;width:100%;max-width:280px;margin:0 auto}
+.up-fine{margin-top:16px;font-size:12.5px;color:var(--ink-3)}
+
+/* ── the other conversions ─────────────────────────── */
+.conv-tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.conv-card{display:flex;align-items:center;gap:12px;padding:14px;border-radius:var(--r);
+           box-shadow:var(--ring);font-size:14px;font-weight:500;
+           transition:box-shadow .16s var(--ease),transform .16s var(--ease)}
+.conv-card:hover{box-shadow:var(--ring),0 6px 20px rgba(0,0,0,.08);transform:translateY(-2px)}
+
+@media (max-width:900px){
+  .conv-hero{grid-template-columns:1fr;gap:34px;padding:40px 0 48px}
+}
+
+/* ── the hub ─────────────────────────────────────────
+   Five tabs over one grid. They are buttons rather than links because the whole
+   list is already on the page — sending someone back to the server to see nine
+   more cards would be slower than the filtering they came for. */
+.chero-sub{max-width:52ch;margin:0 auto 22px;font-size:15px;line-height:1.65;color:var(--ink-2)}
+.cbody{padding:32px 0 64px}
+.ctabs{display:flex;gap:4px;margin-bottom:24px;padding:4px;overflow-x:auto;
+       background:var(--s-1);border-radius:var(--r);width:max-content;max-width:100%}
+.ctab{flex:none;padding:9px 16px;border-radius:var(--r-sm);font-size:13.5px;
+      color:var(--ink-2);white-space:nowrap;transition:background .14s var(--ease),color .14s var(--ease)}
+.ctab:hover{color:var(--ink)}
+.ctab[aria-selected=true]{background:var(--bg);color:var(--ink);font-weight:500;box-shadow:var(--ring)}
+
+/* Says what these two formats actually are, so the page has copy of its own
+   rather than the same sentence as the other seventy-three. */
+.conv-why{max-width:46ch;margin:14px 0 20px;font-size:15px;line-height:1.65;color:var(--ink-2)}
+
+/* The result of a conversion, or the reason there is not one. Lives under the
+   upload card so it is read where the file was dropped. */
+.conv-out{margin-top:14px;padding:14px 16px;border-radius:var(--r);font-size:13.5px;line-height:1.6}
+.conv-out p{margin:0}
+.conv-out--ok{background:rgba(22,163,74,.09);border:1px solid rgba(22,163,74,.22);color:var(--ink-2)}
+.conv-out--ok .btn{margin-top:11px}
+.conv-out--bad{background:rgba(220,38,38,.07);border:1px solid rgba(220,38,38,.20);color:var(--ink-2)}
+.conv-out--soon{background:var(--s-1);border:1px solid var(--line);color:var(--ink-3)}
+.conv-out--soon a{color:var(--ink-2);text-decoration:underline;text-underline-offset:2px}
+/* While it works the card dims and stops taking another file, so a second
+   drop cannot race the first. */
+.up-in.busy{opacity:.55;pointer-events:none}

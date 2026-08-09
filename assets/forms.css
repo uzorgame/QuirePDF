@@ -1,0 +1,206 @@
+/* Form library and individual form pages. */
+
+
+/* ── library hero ──────────────────────────────────── */
+.fhero{background:var(--acc-soft);border-bottom:1px solid var(--line);
+       padding:46px 0 40px;text-align:center}
+.fhero h1{font-size:clamp(28px,3.8vw,38px);line-height:1.1;font-weight:600;
+          letter-spacing:-.032em;margin-bottom:24px}
+.fsearch{position:relative;max-width:620px;margin:0 auto}
+.fsearch svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);
+             width:17px;height:17px;stroke:var(--ink-3);fill:none;stroke-width:1.8;
+             stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.fsearch input{width:100%;height:48px;padding:0 18px 0 44px;font:inherit;font-size:15px;
+               color:var(--ink);background:#fff;border:none;border-radius:var(--r);
+               box-shadow:var(--ring);outline:none;
+               transition:box-shadow .16s var(--ease)}
+.fsearch input::placeholder{color:var(--ink-3)}
+.fsearch input:focus{box-shadow:0 0 0 2px var(--acc)}
+.ftopics{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;
+         gap:8px 14px;margin-top:18px;font-size:13.5px;color:var(--ink-2)}
+.ftopic{font-size:13.5px;color:var(--acc);text-decoration:underline;
+        text-underline-offset:3px;transition:opacity .13s var(--ease)}
+.ftopic:hover{opacity:.7}
+
+/* ── library body ──────────────────────────────────── */
+.fbody{display:grid;grid-template-columns:210px 1fr;gap:40px;padding:36px 24px 72px;
+       align-items:start}
+.fside{position:sticky;top:76px;display:flex;flex-direction:column;gap:2px}
+.fside h2{font-size:17px;font-weight:600;letter-spacing:-.025em;margin-bottom:12px}
+.fcat{text-align:left;padding:9px 12px;border-radius:var(--r);font-size:14px;
+      color:var(--ink-2);transition:background .13s var(--ease),color .13s var(--ease)}
+.fcat:hover{background:var(--s-1);color:var(--ink)}
+.fcat[aria-pressed=true]{background:var(--acc-soft);color:var(--acc);font-weight:500}
+
+.fpinned{margin-bottom:38px}
+.fpinned h2,.fhead h2{font-size:19px;font-weight:600;letter-spacing:-.025em}
+.fpin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+           gap:12px;margin-top:14px}
+.fpin{display:flex;align-items:center;gap:12px;padding:14px;border-radius:var(--r);
+      box-shadow:var(--ring);transition:box-shadow .16s var(--ease),transform .16s var(--ease)}
+.fpin:hover{box-shadow:var(--ring),0 6px 20px rgba(0,0,0,.08);transform:translateY(-2px)}
+.fpin-code{flex:none;min-width:56px;height:32px;padding:0 9px;border-radius:var(--r-sm);
+           background:var(--acc);color:#fff;display:grid;place-items:center;
+           font-family:var(--fm);font-size:11.5px;font-weight:500}
+.fpin-txt{min-width:0}
+.fpin-txt b{display:block;font-size:13.5px;font-weight:500;line-height:1.35;
+            overflow:hidden;text-overflow:ellipsis;display:-webkit-box;
+            -webkit-line-clamp:2;-webkit-box-orient:vertical}
+.fpin-txt em{display:block;font-style:normal;font-size:12px;color:var(--ink-3);margin-top:2px}
+.fpin svg{width:13px;height:13px;stroke:var(--ink-3);fill:none;stroke-width:2;
+          stroke-linecap:round;stroke-linejoin:round;margin-left:auto;flex:none;
+          transition:transform .18s var(--ease),stroke .16s var(--ease)}
+.fpin:hover svg{transform:translateX(3px);stroke:var(--acc)}
+
+.fhead{display:flex;align-items:baseline;gap:12px;padding-top:8px;
+       border-top:1px solid var(--line);margin-bottom:16px;padding-top:26px}
+.fcount{font-size:13px;color:var(--ink-3)}
+
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:16px}
+.fcard{display:flex;flex-direction:column;gap:8px;
+       transition:transform .16s var(--ease)}
+.fcard:hover{transform:translateY(-3px)}
+/* The real first page, cropped to a square-ish window from the top.
+   One drawn illustration repeated across ninety cards told you nothing — a tax
+   return and a lease looked identical, so the only way to find out what you
+   were opening was to open it. A photograph of the page is recognisable at this
+   size without reading a word of it. */
+.fcard-art{display:block;border-radius:var(--r);overflow:hidden;background:var(--paper);
+           box-shadow:var(--ring);aspect-ratio:1/1.05;
+           transition:box-shadow .16s var(--ease)}
+.fcard:hover .fcard-art{box-shadow:var(--ring),0 8px 24px rgba(0,0,0,.10)}
+/* Anchored to the top: the masthead of a form is the part that identifies it,
+   and centring the crop would show the middle of page one instead. */
+.fcard-art img{display:block;width:100%;height:100%;object-fit:cover;object-position:top center}
+.fcard-tags{display:flex;flex-wrap:wrap;gap:6px}
+.fchip{font-size:11.5px;padding:3px 8px;border-radius:99px;background:var(--s-1);
+       color:var(--ink-2);white-space:nowrap}
+.fchip--cat{background:var(--acc-soft);color:var(--acc)}
+.fcard b{font-size:14px;font-weight:500;line-height:1.4}
+.fcard em{font-style:normal;font-size:12.5px;color:var(--ink-3)}
+.fempty{padding:40px 0;color:var(--ink-3)}
+
+/* ── single form ───────────────────────────────────────
+   The document is the hero, not a headline sitting on a darkened photograph of
+   one. The competitor hides the form behind a scrim and a button, which reads
+   as a paywall even though it is not one; here the page is simply shown, at a
+   size where you can read its headings and decide whether it is the one you
+   came for. Everything else is text on paper-white, like the rest of the site. */
+.fbanner{position:relative;margin-top:24px;
+         display:grid;grid-template-columns:minmax(0,1fr) minmax(0,420px);
+         gap:44px;align-items:center;
+         padding:44px 44px 44px 40px;border-radius:var(--r-lg);
+         background:
+           radial-gradient(ellipse 80% 120% at 8% 0%, rgba(37,99,235,.07), transparent 62%),
+           var(--s-1);
+         box-shadow:var(--ring)}
+.fbanner-in{min-width:0}
+.fbanner-eyebrow{display:block;font-size:12px;letter-spacing:.02em;
+                 color:var(--ink-3);margin-bottom:10px}
+.fbanner h1{font-size:clamp(26px,3.4vw,38px);line-height:1.14;font-weight:600;
+            letter-spacing:-.035em;color:var(--ink);margin-bottom:22px;
+            text-wrap:balance}
+.fbanner-note{margin-top:16px;font-size:12.5px;color:var(--ink-3);line-height:1.6;max-width:52ch}
+.fbanner-note a{color:var(--ink-2);text-decoration:underline;text-underline-offset:2px}
+
+/* Paper, with the weight paper has. The shadow is what separates the sheet from
+   the panel behind it — without it a white page on a near-white panel is just a
+   rectangle with a border. */
+.fsheet{position:relative;margin:0}
+.fsheet img{display:block;width:100%;height:auto;border-radius:6px;
+            background:var(--paper);
+            box-shadow:0 1px 2px rgba(15,23,42,.10),
+                       0 12px 28px -8px rgba(15,23,42,.22),
+                       0 0 0 1px rgba(15,23,42,.06)}
+/* The page fades out at the foot rather than stopping mid-sentence at a hard
+   edge, which is the difference between a preview and a screenshot someone
+   cropped badly. */
+.fsheet::after{content:'';position:absolute;left:0;right:0;bottom:0;height:88px;
+               border-radius:0 0 6px 6px;pointer-events:none;
+               background:linear-gradient(to bottom, rgba(255,255,255,0), var(--s-1))}
+.fsheet figcaption{position:relative;z-index:1;margin-top:10px;text-align:center;
+                   font-family:var(--fm);font-size:11px;color:var(--ink-3)}
+
+/* Said before you start typing rather than after. A caveat that only turns up
+   in the export dialog has already wasted the ten minutes it took to fill the
+   thing in. */
+.fbanner-flag{display:flex;gap:9px;margin-top:16px;padding:12px 14px;max-width:52ch;
+  border:1px solid rgba(180,83,9,.20);border-radius:10px;
+  background:rgba(245,158,11,.09);
+  font-size:12.5px;line-height:1.6;color:var(--ink-2)}
+.fbanner-flag svg{flex:none;width:16px;height:16px;margin-top:2px;fill:none;
+  stroke:rgba(180,83,9,.85);stroke-width:1.6;stroke-linecap:round}
+
+@media (max-width:900px){
+  .fbanner{grid-template-columns:1fr;gap:32px;padding:32px 24px}
+  /* Below the copy on a narrow screen, and capped: a full-width sheet on a
+     phone is a wall of unreadable six-point type. */
+  .fsheet{max-width:340px;margin-inline:auto}
+}
+
+/* A deadline is the one fact people scroll looking for, so it is pulled out of
+   the prose rather than buried in a paragraph about it. */
+.fdue{display:flex;gap:10px;align-items:flex-start;margin:18px 0;padding:13px 15px;
+      border-radius:10px;background:var(--acc-soft);color:var(--ink-2);
+      font-size:14px;line-height:1.6}
+.fdue b{color:var(--ink);font-weight:600}
+.fdue svg{flex:none;width:17px;height:17px;margin-top:3px;fill:none;
+          stroke:var(--acc);stroke-width:1.7;stroke-linecap:round}
+
+/* What to have to hand, and what people get wrong. Both are lists because both
+   are things you check off, and prose makes checking off harder than it is. */
+.fready{margin:14px 0 0;padding:0;list-style:none;display:grid;gap:9px}
+.fready li{position:relative;padding-left:26px;font-size:14.5px;line-height:1.6;color:var(--ink-2)}
+.fready li::before{content:'';position:absolute;left:2px;top:8px;width:9px;height:5px;
+                   border-left:2px solid var(--acc);border-bottom:2px solid var(--acc);
+                   transform:rotate(-45deg)}
+
+.fwatch{margin:14px 0 0;padding:0;list-style:none;counter-reset:w;display:grid;gap:12px}
+.fwatch li{position:relative;padding-left:34px;font-size:14.5px;line-height:1.65;color:var(--ink-2)}
+.fwatch li::before{counter-increment:w;content:counter(w);
+                   position:absolute;left:0;top:1px;width:22px;height:22px;
+                   display:grid;place-items:center;border-radius:50%;
+                   background:var(--s-1);color:var(--ink-3);
+                   font-family:var(--fm);font-size:11px}
+
+.fmeta{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1px;
+       margin-top:22px;background:var(--line);border-radius:var(--r);overflow:hidden;
+       box-shadow:var(--ring)}
+.fmeta div{background:var(--bg);padding:14px 16px}
+.fmeta span{display:block;font-size:12px;color:var(--ink-3);margin-bottom:3px}
+.fmeta b{font-size:13.5px;font-weight:500}
+
+.fguide{display:grid;grid-template-columns:212px 1fr;gap:48px;
+        padding-top:56px;padding-bottom:76px;align-items:start}
+.ftoc{position:sticky;top:76px;display:flex;flex-direction:column;gap:3px}
+.ftoc h2{font-size:12px;font-weight:500;color:var(--ink-3);margin-bottom:9px}
+.ftoc a{padding:6px 0;font-size:13.5px;color:var(--ink-2);transition:color .13s var(--ease)}
+.ftoc a:hover{color:var(--acc)}
+
+.fprose{max-width:72ch}
+.fprose h2{font-size:21px;font-weight:600;letter-spacing:-.025em;margin:34px 0 12px;
+           scroll-margin-top:80px}
+.fprose h2:first-child{margin-top:0}
+.fprose p{color:var(--ink-2);margin-bottom:12px}
+.fprose p b{color:var(--ink);font-weight:500}
+
+.fnote{display:flex;gap:12px;padding:16px;border-radius:var(--r);background:var(--s-1);
+       margin:26px 0}
+.fnote svg{width:18px;height:18px;stroke:var(--ink-3);fill:none;stroke-width:1.7;
+           stroke-linecap:round;stroke-linejoin:round;flex:none;margin-top:1px}
+.fnote p{margin:0;font-size:13px;color:var(--ink-3)}
+
+.frelated{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.frel{display:flex;align-items:center;gap:11px;padding:12px;border-radius:var(--r);
+      box-shadow:var(--ring);font-size:13.5px;line-height:1.35;
+      transition:box-shadow .16s var(--ease),transform .16s var(--ease)}
+.frel:hover{box-shadow:var(--ring),0 6px 18px rgba(0,0,0,.08);transform:translateY(-2px)}
+
+@media (max-width:900px){
+  .fbody{grid-template-columns:1fr;gap:26px}
+  .fside{position:static;flex-direction:row;flex-wrap:wrap}
+  .fside h2{width:100%}
+  .fguide{grid-template-columns:1fr;gap:26px}
+  .ftoc{position:static;flex-direction:row;flex-wrap:wrap;gap:14px}
+  .ftoc h2{width:100%;margin-bottom:0}
+}

@@ -1,0 +1,71 @@
+/* Site footer — identical markup on every page.
+   Two variants: the full block for content pages, and --slim for the editor,
+   where vertical space belongs to the document and not to us. */
+
+.site-foot{border-top:1px solid var(--line);background:var(--bg);
+           font-family:var(--f);font-size:13px;color:var(--ink-2)}
+
+.sf-in{max-width:var(--wrap);margin:0 auto;padding:34px 24px 26px;
+       display:grid;grid-template-columns:1fr auto auto;gap:32px;align-items:start}
+
+.sf-brand{display:flex;align-items:flex-start;gap:11px}
+.sf-brand svg{display:block;flex:none}
+.sf-brand b{display:block;font-size:14px;font-weight:600;color:var(--ink);letter-spacing:-.02em}
+.sf-brand span{display:block;margin-top:3px;color:var(--ink-3);font-size:12.5px;max-width:280px;line-height:1.5}
+
+.sf-nav{display:flex;flex-direction:column;gap:9px}
+.sf-nav a{color:var(--ink-2);transition:color .13s var(--ease)}
+.sf-nav a:hover{color:var(--ink)}
+
+/* The author card. It is the one element on the page allowed a hover lift —
+   it is the only link that leaves the site, so it should feel like a door. */
+.sf-author{display:flex;align-items:center;gap:11px;padding:10px 13px;
+           border-radius:var(--r);background:var(--s-1);
+           transition:background .16s var(--ease),transform .16s var(--ease)}
+.sf-author:hover{background:var(--s-2);transform:translateY(-1px)}
+.sf-ico{width:32px;height:32px;border-radius:var(--r-sm);overflow:hidden;flex:none;
+        box-shadow:var(--ring)}
+.sf-ico svg{display:block;width:100%;height:100%}
+.sf-txt b{display:block;font-size:13px;font-weight:500;color:var(--ink)}
+.sf-txt em{display:block;font-style:normal;font-size:12px;color:var(--ink-3);margin-top:2px}
+.sf-arrow{width:14px;height:14px;stroke:var(--ink-3);fill:none;stroke-width:1.8;
+          stroke-linecap:round;stroke-linejoin:round;flex:none;
+          transition:transform .18s var(--ease),stroke .16s var(--ease)}
+.sf-author:hover .sf-arrow{transform:translate(2px,-2px);stroke:var(--ink-2)}
+
+.sf-legal{max-width:var(--wrap);margin:0 auto;padding:0 24px 30px;
+          font-size:12px;color:var(--ink-3);
+          display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 20px}
+.sf-links{display:flex;gap:18px}
+.sf-links a{color:var(--ink-3);transition:color .13s var(--ease)}
+.sf-links a:hover{color:var(--ink-2)}
+
+@media (max-width:860px){
+  .sf-in{grid-template-columns:1fr;gap:24px;padding:28px 20px 22px}
+  .sf-nav{flex-direction:row;flex-wrap:wrap;gap:18px}
+  .sf-author{width:max-content}
+  .sf-legal{padding:0 20px 26px}
+}
+
+/* ── slim variant, used inside the editor shell ─────────
+   One line, 38px tall, no wrapping. It sits in the app's grid rather than
+   floating, so it can never cover the document. */
+.site-foot--slim{border-top:1px solid var(--line)}
+.site-foot--slim .sf-in{padding:0 14px;height:38px;display:flex;align-items:center;
+                        gap:14px;max-width:none}
+.site-foot--slim .sf-brand span,
+.site-foot--slim .sf-nav,
+.site-foot--slim .sf-legal{display:none}
+/* The full footer carries its legal links in the bottom row, which the slim
+   variant does not have — so the editor gets its own inline pair instead. */
+.sf-mini{display:none}
+.site-foot--slim .sf-mini{display:flex;gap:16px;font-size:12px}
+.site-foot--slim .sf-mini a{color:var(--ink-3);transition:color .13s var(--ease)}
+.site-foot--slim .sf-mini a:hover{color:var(--ink-2)}
+.site-foot--slim .sf-brand b{font-size:12.5px;font-weight:450;color:var(--ink-3)}
+.site-foot--slim .sf-spacer{flex:1}
+.site-foot--slim .sf-author{padding:5px 9px;gap:8px}
+.site-foot--slim .sf-ico{width:20px;height:20px;border-radius:4px}
+.site-foot--slim .sf-txt b{font-size:12px}
+.site-foot--slim .sf-txt em{display:inline;margin:0 0 0 7px;font-size:12px}
+.site-foot--slim .sf-txt{display:flex;align-items:baseline}

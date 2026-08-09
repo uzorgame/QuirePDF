@@ -1,0 +1,62 @@
+/* Design tokens, shared by every page.
+   Framer's discipline, inverted to light: there is no grey palette. Every
+   surface is black at a low alpha over white, so nothing can drift out of tune
+   and depth comes from alpha rather than from borders. */
+:root{
+  --bg:#ffffff;
+  --s-1:rgba(0,0,0,.035);   /* inert panels        */
+  --s-2:rgba(0,0,0,.06);    /* controls at rest    */
+  --s-3:rgba(0,0,0,.10);    /* hover, raised       */
+  --line:rgba(0,0,0,.09);
+  --line-2:rgba(0,0,0,.14);
+
+  --ink:#111114;
+  --ink-2:rgba(0,0,0,.62);
+  --ink-3:rgba(0,0,0,.42);
+
+  /* Deeper than Framer's #0099ff on purpose — this one sits under a document
+     all day and must not shout. */
+  --acc:#2563eb;
+  --acc-hi:#1d4ed8;
+  --acc-soft:rgba(37,99,235,.10);
+  --acc-line:rgba(37,99,235,.45);
+
+  /* The canvas backdrop is the one place a flat tone is unavoidable: a white
+     page on a white app has no edge to read. */
+  --stage:#f1f1f2;
+  --paper:#ffffff; --paper-ink:#111111;
+  --ring:0 0 0 1px rgba(0,0,0,.07);
+  --lift:0 1px 2px rgba(0,0,0,.05), 0 10px 30px rgba(0,0,0,.07);
+
+  --r:8px; --r-sm:6px; --r-lg:14px;
+  --f:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --fm:'JetBrains Mono',ui-monospace,monospace;
+  --ease:cubic-bezier(.16,1,.3,1);
+
+  --wrap:1120px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+a{color:inherit;text-decoration:none}
+
+/* The `hidden` attribute is only a UA rule of `display: none`, so any component
+   that sets its own display silently wins and the element stays visible. This
+   restores the meaning of the attribute for every one of them. */
+[hidden]{display:none !important}
+
+/* Scrollbars: thin, trackless, made of the same black alpha as every other
+   surface. The transparent border plus background-clip keeps the thumb inset
+   from the edge instead of welded to it. */
+*{scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.18) transparent}
+::-webkit-scrollbar{width:12px;height:12px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(0,0,0,.18);border-radius:99px;
+  border:4px solid transparent;background-clip:content-box}
+::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.32);background-clip:content-box}
+::-webkit-scrollbar-thumb:active{background:rgba(0,0,0,.45);background-clip:content-box}
+::-webkit-scrollbar-corner{background:transparent}
+
+::selection{background:var(--acc);color:#fff}
+
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:var(--r-sm)}

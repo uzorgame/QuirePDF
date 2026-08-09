@@ -1,0 +1,703 @@
+/* The editor shell. Everything here is application chrome and never appears on
+   a content page, so the class names are short and unprefixed on purpose —
+   see the note in README.md. */
+
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f);font-size:12px;
+     overflow:hidden;-webkit-font-smoothing:antialiased;letter-spacing:-.005em}
+
+/* The slim footer is a grid row, not a floating bar, so it can never cover
+   the document no matter how the window is sized. */
+.app{display:grid;grid-template-rows:60px 70px 1fr auto;height:100%}
+
+/* The shared .btn is sized for reading pages. Inside the application shell and
+   its modals everything is one step tighter, so the override is scoped to them
+   rather than redefining the button globally. */
+.app .btn,
+.ovl .btn{gap:7px;padding:8px 14px;font-size:12px}
+.app .btn svg,
+.ovl .btn svg{width:14px;height:14px}
+.ovl .btn--danger{background:#dc2626;color:#fff}
+.ovl .btn--danger:hover{background:#b91c1c}
+.badge{font-size:12px;color:var(--ink-3);background:var(--s-1);
+       padding:6px 11px;border-radius:var(--r);white-space:nowrap}
+.badge i{display:inline-block;width:5px;height:5px;border-radius:50%;
+         background:var(--acc);margin-right:7px;vertical-align:1px}
+
+/* ── toolbar ───────────────────────────────────────── */
+.bar{display:flex;align-items:center;gap:1px;padding:0 8px;
+     border-bottom:1px solid var(--line);overflow-x:auto;overflow-y:hidden}
+.tool{display:flex;flex-direction:column;align-items:center;justify-content:center;
+      gap:5px;min-width:60px;height:56px;padding:0 7px;border-radius:var(--r);
+      color:var(--ink-2);flex:none;
+      transition:background .13s var(--ease),color .13s var(--ease)}
+.tool svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.6;
+          stroke-linecap:round;stroke-linejoin:round;flex:none}
+.tool i{font-style:normal;font-size:11px;white-space:nowrap;color:var(--ink-3);
+        transition:color .13s var(--ease)}
+.tool:hover{background:var(--s-2);color:var(--ink)}
+.tool:hover i{color:var(--ink-2)}
+.tool[aria-pressed=true]{background:var(--acc);color:#fff}
+.tool[aria-pressed=true] i{color:rgba(255,255,255,.88)}
+.tool[disabled]{opacity:.32;pointer-events:none}
+/* Redact is the one destructive tool, so its glyph carries a fill rather than
+   a stroke — it reads as "this covers something" even at 21px. */
+.tool .solid{fill:currentColor;stroke:none}
+.sep{width:1px;height:26px;background:var(--line);margin:0 6px;flex:none}
+.spacer{flex:1;min-width:8px}
+
+/* ── tooltip ───────────────────────────────────────────
+   Lives on <body>, not inside .bar — the toolbar scrolls horizontally and any
+   pseudo-element tooltip would be clipped by its own overflow. */
+.tip{position:fixed;z-index:200;pointer-events:none;
+     background:#1c1c1f;color:#fff;border-radius:10px;padding:8px 11px;
+     display:flex;align-items:center;gap:9px;white-space:nowrap;
+     box-shadow:0 6px 24px rgba(0,0,0,.22),0 1px 3px rgba(0,0,0,.16);
+     opacity:0;transform:translateY(-5px) scale(.97);transform-origin:top center;
+     transition:opacity .13s var(--ease),transform .2s var(--ease)}
+.tip.on{opacity:1;transform:translateY(0) scale(1)}
+.tip b{font-size:12.5px;font-weight:500}
+.tip em{font-style:normal;font-size:12px;color:rgba(255,255,255,.55)}
+.tip kbd{font-family:var(--fm);font-size:10.5px;line-height:1;color:rgba(255,255,255,.72);
+         background:rgba(255,255,255,.13);border-radius:4px;padding:4px 5px}
+.tip::before{content:'';position:absolute;top:-4px;left:var(--nx,50%);
+             width:9px;height:9px;background:#1c1c1f;border-radius:2px;
+             transform:translateX(-50%) rotate(45deg)}
+
+/* ── body ──────────────────────────────────────────── */
+.body{display:grid;grid-template-columns:236px 1fr 260px;min-height:0}
+
+.rail{border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.rail-head{display:flex;align-items:center;justify-content:space-between;
+           padding:13px 14px;border-bottom:1px solid var(--line)}
+.lbl{font-size:12px;color:var(--ink-3)}
+/* `position:relative` is what makes offsetTop inside here mean "distance down
+   the rail" — without it the arithmetic that centres a thumbnail is measured
+   against whatever ancestor happens to be positioned. */
+.thumbs{position:relative;overflow-y:auto;padding:16px 18px;
+        display:flex;flex-direction:column;gap:14px;
+        overscroll-behavior:contain;scrollbar-gutter:stable}
+.thumb{cursor:pointer}
+.thumb .sheet{background:var(--paper);border-radius:var(--r-sm);overflow:hidden;
+              box-shadow:var(--ring),0 1px 3px rgba(15,23,42,.06);line-height:0;
+              transition:transform .16s var(--ease),box-shadow .16s var(--ease)}
+/* The canvas is rendered above 1:1 and scaled down here, which is the whole
+   point — a downscaled bitmap resolves crisply, an upscaled one cannot. */
+.thumb .sheet canvas{width:100%;height:auto;display:block}
+.thumb:hover .sheet{transform:translateY(-2px);box-shadow:var(--ring),0 6px 18px rgba(0,0,0,.10)}
+/* Outside the sheet rather than over it, so the ring does not sit on the top
+   line of the page and read as part of it. */
+.thumb[aria-current=true] .sheet{box-shadow:0 0 0 2px var(--acc),0 4px 12px rgba(37,99,235,.18)}
+.thumb .n{text-align:center;font-family:var(--fm);font-size:11px;
+          color:var(--ink-3);margin-top:7px;
+          transition:color .16s var(--ease)}
+.thumb[aria-current=true] .n{color:var(--acc);font-weight:600}
+
+/* ── the stage ─────────────────────────────────────── */
+.stage{overflow:auto;background:var(--stage);position:relative;
+       transition:background .15s var(--ease)}
+.stage.over{background:var(--acc-soft);box-shadow:inset 0 0 0 2px var(--acc)}
+.pages{display:flex;flex-direction:column;align-items:center;gap:20px;
+       padding:24px 34px 92px}
+
+/* One page. Sized before it paints, so the scrollbar does not grow under the
+   cursor as canvases arrive. */
+/* isolation makes the page its own blending group. Anything above the canvas
+   that multiplies — a selection band, a highlighter stroke — then blends with
+   the printed page and stops there, instead of reaching for whatever the site
+   happens to have behind it. */
+.pv{position:relative;isolation:isolate;background:var(--paper);border-radius:2px;flex:none;
+    box-shadow:var(--ring),var(--lift)}
+.pv canvas{display:block;border-radius:2px}
+.pv-n{position:absolute;left:50%;bottom:-17px;transform:translateX(-50%);
+      font-family:var(--fm);font-size:10.5px;color:var(--ink-3);pointer-events:none}
+
+/* ── right panel ───────────────────────────────────── */
+.panel{border-left:1px solid var(--line);overflow-y:auto}
+.sec{padding:15px 16px;border-bottom:1px solid var(--line)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.row:last-child{margin-bottom:0}
+.row>span:first-child{color:var(--ink-2)}
+.val{font-family:var(--fm);font-size:11px;color:var(--ink)}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px}
+.acts button{display:flex;align-items:center;justify-content:center;gap:6px;
+             padding:8px 6px;border-radius:var(--r-sm);background:var(--s-1);
+             font-size:11.5px;color:var(--ink-2);
+             transition:background .13s var(--ease),color .13s var(--ease)}
+.acts button:hover{background:var(--s-2);color:var(--ink)}
+.acts button svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.7;
+                 stroke-linecap:round;stroke-linejoin:round}
+.acts .danger:hover{background:rgba(220,38,38,.10);color:#dc2626}
+.hint{color:var(--ink-3);line-height:1.55;margin-top:12px}
+
+/* ── zoom dock ─────────────────────────────────────── */
+.dock{position:fixed;left:50%;bottom:56px;transform:translateX(-50%);
+      display:flex;align-items:center;gap:2px;
+      background:rgba(255,255,255,.86);backdrop-filter:blur(20px);
+      border-radius:12px;padding:5px;box-shadow:var(--ring),0 6px 24px rgba(0,0,0,.12)}
+.dock button{min-width:28px;height:28px;padding:0 6px;border-radius:var(--r-sm);
+             display:grid;place-items:center;color:var(--ink-2);font-size:13px;
+             transition:.13s var(--ease)}
+.dock button:hover{background:var(--s-2);color:var(--ink)}
+.dock .pg{font-family:var(--fm);font-size:11px;color:var(--ink-3);padding:0 9px}
+.dock .pg b{color:var(--ink);font-weight:500}
+.dock .d{width:1px;height:18px;background:var(--line-2);margin:0 4px}
+#zoomLevel{font-family:var(--fm);font-size:11px;color:var(--ink-2)}
+
+/* ── transient status ──────────────────────────────── */
+.toast{position:fixed;left:50%;bottom:112px;transform:translate(-50%,8px);
+       background:#1c1c1f;color:#fff;font-size:12.5px;padding:10px 15px;
+       border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,.24);z-index:300;
+       opacity:0;pointer-events:none;max-width:min(460px,88vw);text-align:center;
+       transition:opacity .16s var(--ease),transform .22s var(--ease)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+.busy{position:fixed;inset:0;display:none;place-items:center;z-index:250;
+      background:rgba(255,255,255,.62);backdrop-filter:blur(2px)}
+.busy.on{display:grid}
+.busy span{display:flex;align-items:center;gap:10px;background:#fff;
+           padding:12px 18px;border-radius:var(--r);font-size:13px;
+           box-shadow:var(--ring),0 10px 34px rgba(0,0,0,.14)}
+.busy span::before{content:'';width:13px;height:13px;border-radius:50%;
+  border:2px solid var(--s-3);border-top-color:var(--acc);animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── modals ────────────────────────────────────────── */
+.ovl{position:fixed;inset:0;background:rgba(17,17,20,.34);backdrop-filter:blur(5px);
+     display:none;place-items:center;z-index:100;padding:24px}
+.ovl.on{display:grid}
+.modal{background:#fff;border-radius:16px;overflow:hidden;max-height:calc(100vh - 48px);
+       display:flex;flex-direction:column;
+       box-shadow:0 0 0 1px rgba(0,0,0,.06),0 24px 70px rgba(0,0,0,.24)}
+.m-head{display:flex;align-items:center;justify-content:space-between;flex:none;
+        padding:17px 20px;border-bottom:1px solid var(--line)}
+.m-head h3{font-size:15px;font-weight:600;letter-spacing:-.02em}
+.m-head .sub{color:var(--ink-3);margin-left:10px;font-weight:400}
+.close{width:28px;height:28px;border-radius:var(--r-sm);display:grid;place-items:center;
+       color:var(--ink-3);font-size:17px;line-height:1}
+.close:hover{background:var(--s-2);color:var(--ink)}
+.close:focus-visible{outline:none;box-shadow:var(--ring);color:var(--ink)}
+/* The dialog itself takes focus when nothing inside it can, and a focus ring
+   round the whole card would be alarming rather than helpful. */
+.modal:focus{outline:none}
+.m-foot{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;
+        gap:10px;border-top:1px solid var(--line);flex:none}
+.m-foot .l{color:var(--ink-3)}
+
+/* start dialog */
+.modal--start{width:min(980px,100%)}
+.tpl-grid{overflow-y:auto;padding:20px 22px 24px}
+.tpl-group{font-size:12px;font-weight:500;color:var(--ink-3);margin:20px 0 10px}
+.tpl-group:first-child{margin-top:0}
+.tpl-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+.tpl{text-align:left;display:flex;flex-direction:column;gap:7px;
+     transition:transform .16s var(--ease)}
+.tpl:hover{transform:translateY(-3px)}
+.tpl-art{display:grid;place-items:start center;background:var(--stage);
+         border-radius:var(--r);box-shadow:var(--ring);padding:12px 12px 0;
+         aspect-ratio:1/1.15;overflow:hidden;
+         transition:box-shadow .16s var(--ease)}
+.tpl:hover .tpl-art{box-shadow:0 0 0 2px var(--acc),0 8px 24px rgba(0,0,0,.10)}
+/* A flat placeholder, not a shimmer.
+ *
+ * The previews used to be built one after another and a moving gradient was
+ * covering for the wait. Built together they all land at once, and an animation
+ * over a wait that no longer happens is what made the dialog look like it was
+ * struggling to load. The tile simply holds its shape until its page arrives. */
+.tpl-art{position:relative}
+.tpl-art::after{content:'';position:absolute;inset:12px 12px 0;
+  border-radius:3px;background:var(--s-1)}
+.tpl-art--done::after{display:none}
+.tpl-art canvas{position:relative;z-index:1;
+                width:100%;height:auto;display:block;background:#fff;
+                border-radius:3px;box-shadow:0 1px 4px rgba(0,0,0,.10)}
+.tpl b{font-size:13.5px;font-weight:500}
+.tpl em{font-style:normal;font-size:12px;color:var(--ink-3);line-height:1.45}
+
+/* export */
+.modal--export{width:min(460px,100%)}
+.ex-body{padding:20px}
+.ex-row{display:flex;align-items:center;justify-content:space-between;
+        padding:11px 0;border-bottom:1px solid var(--line);font-size:13px}
+.ex-row:last-child{border-bottom:none}
+.ex-row span{color:var(--ink-2)}
+.ex-row b{font-family:var(--fm);font-size:12px;font-weight:500}
+
+/* discard confirmation */
+.modal--confirm{width:min(440px,100%)}
+.cf{padding:26px 24px 22px}
+.cf-ico{width:38px;height:38px;border-radius:var(--r);background:rgba(220,38,38,.10);
+        display:grid;place-items:center;margin-bottom:15px}
+.cf-ico svg{width:20px;height:20px;stroke:#dc2626;fill:none;stroke-width:1.7;
+            stroke-linecap:round;stroke-linejoin:round}
+.cf h3{font-size:17px;font-weight:600;letter-spacing:-.025em;margin-bottom:8px}
+.cf p{font-size:13px;color:var(--ink-2);line-height:1.6}
+.cf p b{color:var(--ink);font-weight:500}
+
+@media (max-width:1100px){
+  .body{grid-template-columns:196px 1fr}
+  .panel{display:none}
+}
+
+/* ── the annotation layer ──────────────────────────────
+   One box per page, sitting exactly on top of the canvas. Geometry is SVG with
+   a viewBox in page points, so it scales with the page for free and strokes
+   stay geometrically exact at any zoom. Text is real HTML because a text box
+   has to be editable, and SVG's answer to that behaves differently in every
+   engine. */
+.ov{position:absolute;inset:0;overflow:hidden}
+.ov svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.ov-html,.ov-marks{position:absolute;inset:0;pointer-events:none}
+
+/* Select is the only tool that lets clicks reach a mark; every other tool needs
+   the whole page surface to draw on, so marks stop intercepting the pointer. */
+.stage[data-tool="select"] .ov{cursor:default}
+.stage[data-tool="draw"] .ov,
+.stage[data-tool="highlight"] .ov,
+.stage[data-tool="sign"] .ov{cursor:crosshair}
+.stage[data-tool="eraser"] .ov{cursor:cell}
+.stage[data-tool="text"] .ov,
+.stage[data-tool="edit-text"] .ov{cursor:text}
+.stage[data-tool="shape"] .ov,
+.stage[data-tool="redact"] .ov,
+.stage[data-tool="link"] .ov,
+.stage[data-tool="field"] .ov,
+.stage[data-tool="crop"] .ov{cursor:crosshair}
+.stage[data-tool="image"] .ov,
+.stage[data-tool="stamp"] .ov{cursor:copy}
+
+/* A text box wearing a border, a selection frame and a handle all at once was
+   three outlines around one word. The box itself now shows nothing until you
+   are actually in it, and then only a hairline. */
+/* The box and its frame are one element, so there is exactly one rectangle
+   round a selected line of text — there used to be two, a pixel apart, because
+   the box drew a border and the selection layer drew another over it. */
+.ov-box{position:absolute;pointer-events:none;border-radius:2px}
+.ov-box--on{box-shadow:0 0 0 1.5px var(--acc)}
+/* Fills the frame and is free to outgrow it. The frame's height is worked out
+   from the line count, which cannot know where a long line will wrap — so the
+   box is allowed to overhang rather than hide what was typed into it. */
+.ov-text{position:absolute;left:0;top:0;width:100%;min-height:100%;
+         pointer-events:auto;outline:none;
+         line-height:1.3;white-space:pre-wrap;word-break:break-word;
+         padding:1px 2px;border-radius:2px;
+         caret-color:var(--acc);transition:box-shadow .12s var(--ease)}
+.ov-box:not(.ov-box--on) .ov-text:hover{box-shadow:0 0 0 1px rgba(37,99,235,.35)}
+.ov-text:empty::before{content:'Type here';color:var(--ink-3)}
+
+.ov-sel{position:absolute;box-shadow:0 0 0 1.5px var(--acc);border-radius:2px;
+        pointer-events:none}
+
+/* Eight grips, sized for a pointer rather than for a screenshot: 9px of paint
+   with a 15px hit area behind it, so they are easy to catch and quiet to look
+   at. Each sits centred on its own side — the arithmetic is the same every
+   time, which is why the old single handle looked hand-placed and these do
+   not. */
+.ov-h{position:absolute;width:9px;height:9px;box-sizing:border-box;
+      background:#fff;border:1.5px solid var(--acc);border-radius:2px;
+      box-shadow:0 1px 2px rgba(15,23,42,.18);
+      pointer-events:auto;touch-action:none;z-index:3}
+.ov-h::before{content:'';position:absolute;inset:-6px}
+
+.ov-h--nw{left:-5px;top:-5px;cursor:nwse-resize}
+.ov-h--n {left:50%;top:-5px;margin-left:-4.5px;cursor:ns-resize}
+.ov-h--ne{right:-5px;top:-5px;cursor:nesw-resize}
+.ov-h--e {right:-5px;top:50%;margin-top:-4.5px;cursor:ew-resize}
+.ov-h--se{right:-5px;bottom:-5px;cursor:nwse-resize}
+.ov-h--s {left:50%;bottom:-5px;margin-left:-4.5px;cursor:ns-resize}
+.ov-h--sw{left:-5px;bottom:-5px;cursor:nesw-resize}
+.ov-h--w {left:-5px;top:50%;margin-top:-4.5px;cursor:ew-resize}
+
+/* The one you drag the box by. Round, filled and a shade larger, because it is
+   the only grip that does something other than resize and should not have to be
+   found by trial. */
+.ov-h--move{right:-7px;top:-7px;width:13px;height:13px;border-radius:50%;
+            background:var(--acc);border-color:#fff;cursor:move;
+            box-shadow:0 1px 3px rgba(15,23,42,.3)}
+
+.ov-tag{position:absolute;transform:translateY(-100%);margin-top:-3px;
+        background:var(--tint);color:#fff;font-size:10px;padding:2px 6px;
+        border-radius:3px;white-space:nowrap;pointer-events:none;
+        max-width:220px;overflow:hidden;text-overflow:ellipsis}
+
+.sw{display:flex;gap:2px;background:var(--s-1);border-radius:var(--r);padding:2px}
+.sw button{padding:5px 10px;font-size:12px;color:var(--ink-2);border-radius:var(--r-sm);
+           transition:.13s var(--ease)}
+.sw button:hover{color:var(--ink)}
+.sw button[aria-pressed=true]{background:#fff;color:var(--ink);
+           box-shadow:var(--ring),0 1px 2px rgba(0,0,0,.06)}
+.chk{display:flex;align-items:center;gap:9px;padding:6px 0;cursor:pointer;color:var(--ink-2)}
+.chk input{appearance:none;width:16px;height:16px;border-radius:5px;flex:none;
+           box-shadow:inset 0 0 0 1px var(--line-2);transition:.13s var(--ease);cursor:pointer}
+.chk input:checked{background:var(--acc);box-shadow:none}
+
+/* ── the inspector ─────────────────────────────────── */
+.ins{display:flex;align-items:center;justify-content:space-between;gap:10px;
+     margin-top:12px}
+.ins--col{flex-direction:column;align-items:stretch;gap:8px}
+.ins>span{color:var(--ink-2);flex:none}
+.sw--wide{display:grid;grid-template-columns:1fr 1fr}
+.swatches{display:flex;gap:6px}
+.sw-c{width:22px;height:22px;border-radius:var(--r-sm);cursor:pointer;
+      box-shadow:inset 0 0 0 1px rgba(0,0,0,.10)}
+.sw-c[aria-pressed=true]{box-shadow:0 0 0 2px var(--acc)}
+.range{width:104px;accent-color:var(--acc)}
+.ins--col .chk{font-size:12px;color:var(--ink-2)}
+
+.ex-warn{margin-top:14px;padding:12px 14px;border-radius:var(--r);
+         background:rgba(220,38,38,.08);color:#b91c1c;font-size:12.5px;
+         line-height:1.55}
+
+/* ── signature dialog ──────────────────────────────── */
+.modal--sign{width:min(560px,100%)}
+.sig-body{padding:18px 20px 20px}
+.sig-body .sw--wide{grid-template-columns:1fr 1fr 1fr;width:max-content}
+.sig-row{margin-top:14px}
+.sig-row input{width:100%;height:42px;padding:0 14px;font:inherit;font-size:14px;
+               color:var(--ink);background:var(--bg);border:none;border-radius:var(--r);
+               box-shadow:var(--ring);outline:none}
+.sig-row input:focus{box-shadow:0 0 0 2px var(--acc)}
+.sig-pad{position:relative;margin-top:14px;background:var(--stage);
+         border-radius:var(--r);overflow:hidden;
+         /* A ruled baseline, because that is what people sign on. */
+         background-image:linear-gradient(var(--line-2),var(--line-2));
+         background-size:calc(100% - 56px) 1px;
+         background-position:28px 76%;background-repeat:no-repeat}
+.sig-pad canvas{display:block;width:100%;height:auto;aspect-ratio:460/150;
+                touch-action:none;cursor:crosshair}
+.sig-hint{position:absolute;inset:auto 0 12px;text-align:center;font-style:normal;
+          font-size:11.5px;color:var(--ink-3);pointer-events:none}
+
+/* ── crop confirmation ─────────────────────────────── */
+.ins-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px}
+.ins-actions .btn{width:100%}
+
+/* A translucent copy of the signature that follows the pointer, so you can see
+   where it will land before you commit to it. */
+.ov-ghost{position:absolute;pointer-events:none;opacity:.45;
+          filter:drop-shadow(0 2px 6px rgba(0,0,0,.18))}
+
+/* The font list. A word processor shows a list, not three buttons. */
+.pick{width:100%;height:34px;padding:0 10px;font:inherit;font-size:12.5px;
+      color:var(--ink);background:var(--bg);border:none;border-radius:var(--r-sm);
+      box-shadow:var(--ring);outline:none;cursor:pointer}
+.pick:focus{box-shadow:0 0 0 2px var(--acc)}
+
+/* With Select active a text box is a mark you drag; the caret only appears
+   once you are actually in it. */
+.stage[data-tool="select"] .ov-text{cursor:move}
+/* Under a text tool the body of the box belongs to the caret, so moving it is
+   the corner grip's job — say so with the cursor rather than letting people
+   discover it by dragging and getting a text selection. */
+.stage[data-tool="text"] .ov-text,
+.stage[data-tool="edit-text"] .ov-text{cursor:text}
+
+/* The eraser nib, drawn where it will bite. A tool that removes things should
+   never leave you guessing about its reach. */
+.ov-nib{position:absolute;pointer-events:none;border-radius:50%;
+        box-shadow:0 0 0 1.5px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.85);
+        background:rgba(255,255,255,.28)}
+
+/* ── the form's own fields ─────────────────────────────
+   A fillable PDF looks identical to a flat scan until something tells you which
+   parts of it expect an answer. The tint is that something: every widget the
+   file declares gets a soft blue box, so the page reads as a form at a glance
+   rather than after a hunt. */
+/* Above the selectable text, which carries a z-index of its own. Without one
+   here the words would sit over the form and swallow every click meant for a
+   box — a form you can read but cannot fill in. */
+.fl{position:absolute;inset:0;pointer-events:none;z-index:2}
+.fl-f{position:absolute;pointer-events:none;
+      font-family:var(--f);color:#0f172a;line-height:1.15;
+      background:rgba(37,99,235,.10);
+      box-shadow:inset 0 0 0 1px rgba(37,99,235,.28);
+      border:none;border-radius:2px;padding:0 3px;margin:0;
+      outline:none;resize:none;overflow:hidden;
+      transition:background .12s var(--ease),box-shadow .12s var(--ease)}
+
+/* Select and Fields hand the pointer to a box; the drawing tools need the whole
+   page surface instead. */
+.fl--on .fl-f{pointer-events:auto;cursor:text}
+.fl--on .fl-f:hover{background:rgba(37,99,235,.17)}
+
+/* The box you are in reads amber against the blue of the ones you are not.
+   Two colours doing two jobs: blue says "this expects an answer", amber says
+   "you are typing here" — and every PDF reader people already use marks the
+   active field in the same warm tone, so it needs no explaining. */
+.fl--on .fl-f:focus{background:rgba(245,158,11,.20);
+                    box-shadow:inset 0 0 0 1.5px rgba(180,83,9,.85),
+                               0 0 0 3px rgba(245,158,11,.22);
+                    position:absolute;z-index:2}
+
+.fl-f[type=checkbox],
+.fl-f[type=radio]{appearance:none;padding:0;display:grid;place-items:center}
+.fl-f[type=radio]{border-radius:50%;box-shadow:inset 0 0 0 1px rgba(37,99,235,.45)}
+.fl--on .fl-f[type=checkbox],
+.fl--on .fl-f[type=radio]{cursor:pointer}
+.fl-f[type=checkbox]:checked,
+.fl-f[type=radio]:checked{background:rgba(37,99,235,.14)}
+
+/* A tick box needs a different focus ring from a text field.
+   The shared one is 1.5px inset plus a 3px halo — fine around a box eighty
+   pixels wide, and on a twelve-pixel checkbox it is most of the box. Focused,
+   the ring and the amber fill met in the middle and the whole thing read as a
+   filled square; the tick only appeared once you clicked away and the ring
+   went. Everything here is in em, and the layer sets 1em to the shorter side
+   of the widget, so the ring stays a ring at any size. */
+.fl--on .fl-f[type=checkbox]:focus,
+.fl--on .fl-f[type=radio]:focus{
+  background:rgba(245,158,11,.16);
+  box-shadow:inset 0 0 0 .07em rgba(180,83,9,.9),
+             0 0 0 .12em rgba(245,158,11,.30)}
+.fl-f[type=radio]:focus{border-radius:50%}
+/* Drawn rather than a glyph, so the tick scales with the box the form gave it
+   instead of overflowing a small one.
+   Sized in em, where the layer sets 1em to the shorter side of the widget. A
+   percentage would be taken from each axis separately, which in the wide, short
+   boxes real forms are full of turned the check into a thick diagonal bar. */
+.fl-f[type=checkbox]:checked::after{content:'';width:.62em;height:.34em;
+  border-left:.11em solid #0f172a;border-bottom:.11em solid #0f172a;
+  transform:translateY(-.08em) rotate(-45deg)}
+.fl-f[type=radio]:checked::after{content:'';width:.5em;aspect-ratio:1;
+  border-radius:50%;background:#0f172a}
+/* A tick has to stay legible against the amber, so the focused state keeps its
+   own darker ink rather than inheriting the unfocused one. */
+.fl--on .fl-f[type=checkbox]:focus::after,
+.fl--on .fl-f[type=radio]:focus::after{border-color:#431407;background-color:#431407}
+
+.fl-f--locked{background:rgba(0,0,0,.05);box-shadow:inset 0 0 0 1px rgba(0,0,0,.10)}
+
+select.fl-f{cursor:pointer}
+
+/* ── find ─────────────────────────────────────────────
+   Docked at the top right of the stage rather than centred over it: you search
+   a document while looking at it, and a dialog would hide the thing being
+   searched. Same shape as the page dock at the bottom, so the two read as one
+   family of floating controls. */
+.find{position:absolute;top:14px;right:22px;z-index:6;
+      display:flex;align-items:center;gap:6px;
+      padding:6px 8px 6px 12px;border-radius:var(--r);
+      background:var(--bg);box-shadow:var(--ring),0 8px 24px rgba(15,23,42,.14)}
+.find > svg{width:15px;height:15px;flex:none;fill:none;stroke:var(--ink-3);
+            stroke-width:1.8;stroke-linecap:round}
+.find input{width:190px;border:none;outline:none;background:none;
+            font-family:var(--f);font-size:13.5px;color:var(--ink)}
+.find input::placeholder{color:var(--ink-3)}
+.find input::-webkit-search-cancel-button{display:none}
+.find-n{font-family:var(--fm);font-size:11.5px;color:var(--ink-3);
+        min-width:52px;text-align:right;white-space:nowrap}
+.find-b{width:26px;height:26px;flex:none;display:grid;place-items:center;
+        border-radius:var(--r-sm);transition:background .13s var(--ease)}
+.find-b:hover{background:var(--s-1)}
+.find-b:disabled{opacity:.35;pointer-events:none}
+.find-b svg{width:15px;height:15px;fill:none;stroke:var(--ink-2);
+            stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+
+/* The highlights themselves. Under everything interactive and transparent to
+   the pointer — a search result is something to see, not something to click. */
+.fd{position:absolute;inset:0;pointer-events:none;z-index:1}
+.fd-hit{position:absolute;border-radius:1.5px;
+        background:rgba(245,158,11,.38);
+        box-shadow:0 0 0 1px rgba(180,83,9,.35)}
+/* The one you are on, so Enter visibly moves somewhere. */
+.fd-hit--on{background:rgba(245,158,11,.72);
+            box-shadow:0 0 0 1.5px rgba(180,83,9,.8)}
+
+/* The two rows that are controls rather than facts. */
+.ex-row--pick{cursor:pointer}
+
+/* The format picker: a segmented control, not a dropdown. Three options fit on
+   one line, and a native select hands the whole look of the dialog over to the
+   operating system the moment it opens. */
+.seg{display:inline-flex;padding:2px;gap:2px;
+     background:var(--s-1);border:1px solid var(--line);border-radius:9px}
+.seg-b{font-family:var(--f);font-size:12px;font-weight:500;letter-spacing:.02em;
+       color:var(--ink-2);background:none;border:0;border-radius:7px;
+       padding:5px 13px;cursor:pointer;
+       transition:background .12s var(--ease),color .12s var(--ease)}
+.seg-b:hover{color:var(--ink)}
+.seg-b[aria-checked="true"]{background:var(--bg);color:var(--ink);
+  box-shadow:0 0 0 1px var(--line-2),0 1px 2px rgba(15,23,42,.07)}
+.seg-b:focus-visible{outline:none;box-shadow:var(--ring)}
+
+/* What the chosen format costs you, in a line under the row rather than folded
+   into an option label nobody reads while the list is shut. */
+.ex-note{margin:-4px 0 2px;font-size:12px;line-height:1.5;color:var(--ink-3)}
+.ex-toggle{display:flex;align-items:center;gap:7px;cursor:pointer}
+.ex-toggle input{width:14px;height:14px;accent-color:var(--acc);cursor:pointer}
+.ex-toggle b{font-size:12.5px;font-weight:450;color:var(--ink)}
+
+/* ── the selectable text layer ────────────────────────────────────────────
+   A transparent copy of every run of text, sitting exactly over the painted
+   words. The glyphs here are never seen — colour:transparent — they exist so
+   the browser has something to select, and so ::selection lands on the words
+   rather than beside them. */
+.tl{position:absolute;inset:0;overflow:hidden;
+    pointer-events:none;user-select:none;
+    line-height:1;font-family:sans-serif}
+.tl span{position:absolute;white-space:pre;transform-origin:0 0;
+         color:transparent;cursor:text}
+/* Only the Select tool lets the pointer through. Everything else needs the
+   drag for its own purposes. */
+/* The whole layer takes the pointer, not just the words. A press that lands
+   in the gap between two runs has to anchor the selection at the nearest text
+   position; if it fell through to the layer underneath instead, the browser
+   would anchor at the top of the page and a short drag would select everything
+   above it. Marks stay clickable through the text because the overlay catches
+   the press on the way down, before any of this. */
+.tl--on{pointer-events:auto;user-select:text}
+.tl--on span{pointer-events:auto}
+/* The browser's own highlight is suppressed and redrawn below, one band per
+   line. Painting it per glyph over horizontally-scaled copies of the text is
+   what made the words look like they slid sideways under the cursor. */
+.tl ::selection,
+.tl span::selection{background:transparent;
+  /* The colour matters more than the background. Left alone, the browser
+     paints selected text in its own highlight colour — opaque white — which
+     turns these deliberately invisible copies of the page into a visible white
+     ghost sitting a fraction off the printed letters. That misalignment is
+     what looked like the text sliding as you dragged across it. */
+  color:transparent;-webkit-text-fill-color:transparent}
+.tl-sel{position:absolute;inset:0;pointer-events:none}
+/* Multiplied, not laid over.
+ *
+ * A translucent band on top of the page dims everything underneath it — the
+ * letters lose their black and the whole line goes muddy, which is exactly what
+ * a highlighter does not do. Multiply keeps the darkest of the two: white paper
+ * takes the colour, black type stays black. Same rule the exported file uses,
+ * so the screen and the PDF finally agree. */
+.tl-sel i{position:absolute;display:block;border-radius:2px;
+          background:#b3d4fc;mix-blend-mode:multiply}
+
+/* ── the markup bar ───────────────────────────────────────────────────────
+   Appears at the selection, not in the toolbar. Fixed to the viewport because
+   it is positioned from getBoundingClientRect, and hidden on scroll rather
+   than chased down the page. */
+.mk{position:fixed;z-index:60;display:flex;align-items:center;gap:2px;
+    padding:4px;border-radius:11px;
+    background:var(--bg);box-shadow:var(--ring),0 10px 26px -8px rgba(15,23,42,.30);
+    animation:mk-in .13s var(--ease) both}
+@keyframes mk-in{from{opacity:0;transform:translateY(4px) scale(.97)}}
+/* Below the selection instead of above it, when there is no room above. */
+.mk--under{animation-name:mk-in-under}
+@keyframes mk-in-under{from{opacity:0;transform:translateY(-4px) scale(.97)}}
+
+.mk-b{width:30px;height:30px;display:grid;place-items:center;
+      border:0;background:none;border-radius:8px;cursor:pointer;
+      transition:background .12s var(--ease)}
+.mk-b:hover{background:var(--s-2)}
+/* Lit when the selected words already carry this mark, so the second press
+   reads as a switch rather than as a stamp that did nothing. */
+.mk-b--on{background:var(--acc-soft)}
+.mk-b--on svg{stroke:var(--acc)}
+.mk-b--on:hover{background:var(--acc-soft)}
+.mk-b:focus-visible{outline:none;box-shadow:var(--ring)}
+.mk-b:active{background:var(--s-3);transform:translateY(.5px)}
+.mk-b svg{width:17px;height:17px;fill:none;stroke:var(--ink-2);
+          stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.mk-b:hover svg{stroke:var(--ink)}
+/* The line the highlighter draws on, tinted so the icon reads as "highlight"
+   and not as "pen" at a glance. */
+.mk-b .mk-rule{stroke:#eab308;stroke-width:2.6}
+.mk-sep{width:1px;height:18px;background:var(--line);margin:0 3px;flex:none}
+.mk-b--copy svg{stroke-width:1.6}
+
+/* ── the paragraph editor ─────────────────────────────────────────────────
+   Frames appear for every paragraph the moment Edit text is chosen — before
+   any click. That is the whole difference between an editor that shows you
+   what it understands about the page and one that makes you guess. */
+.qb-layer{position:absolute;inset:0;pointer-events:none;z-index:3}
+.qb-layer--on{pointer-events:auto}
+
+.qb{position:absolute;box-sizing:border-box;border:1px dotted #9aa3af;
+    border-radius:2px;cursor:text;pointer-events:auto;
+    transition:background .1s var(--ease),border-color .1s var(--ease)}
+.qb:hover{border-color:#4b5563;background:rgba(37,99,235,.07)}
+
+/* The one being edited. Opaque, because it is standing in for the page
+   underneath — the colour is sampled from the paper, not assumed white. */
+.qb--on{border:1px solid var(--acc);cursor:default;
+        box-shadow:0 0 0 3px rgba(37,99,235,.14);z-index:2}
+.qb--on:hover{background:none}
+/* Grown past its neighbours. Amber rather than red: nothing is broken, the
+   paragraph is simply longer than the space the document left for it. */
+.qb--over{border-color:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,.18)}
+
+/* Laid out but not shown until the paragraph is lifted off the page. It has to
+   be in the layout — the panel reads its styles and the calibration measures
+   it — but showing it on a click would replace the file's own glyphs with a
+   browser's rendering of them, and that is never pixel-for-pixel identical. */
+.qb-t{visibility:hidden}
+.qb--lifted .qb-t{visibility:visible}
+/* Pulled out over the border, not tucked inside it. An absolutely positioned
+   child is laid out against its parent's padding box, so `inset:1px` inside a
+   1px border put the copy two pixels in on every side and four pixels short of
+   the measure — more, at ordinary zoom, than the point and a half of air the
+   detector leaves round a paragraph. The words then could not fit back into
+   the width they were printed in, so the browser wrapped a line early and the
+   frame grew to make room; and every position read back off the copy carried
+   those two pixels into the file. -1px reaches the frame's own rectangle. */
+.qb-t{position:absolute;inset:-1px;outline:none;overflow:visible;
+      color:var(--paper-ink);white-space:pre-wrap;word-break:normal;
+      -webkit-user-modify:read-write-plaintext-only}
+.qb-t span{white-space:pre-wrap}
+
+/* Eight grips, same language as the marks layer so a resize feels the same
+   wherever you do it. */
+/* Wholly outside the box. Sitting half over it, a grip took the press meant
+   for the word beneath it and the click came out as a resize. */
+.qb-h{position:absolute;width:9px;height:9px;background:#fff;
+      border:1.5px solid var(--acc);border-radius:2px;z-index:3}
+.qb-h--nw{left:-12px;top:-12px;cursor:nwse-resize}
+.qb-h--n {left:calc(50% - 4.5px);top:-12px;cursor:ns-resize}
+.qb-h--ne{right:-12px;top:-12px;cursor:nesw-resize}
+.qb-h--e {right:-12px;top:calc(50% - 4.5px);cursor:ew-resize}
+.qb-h--se{right:-12px;bottom:-12px;cursor:nwse-resize}
+.qb-h--s {left:calc(50% - 4.5px);bottom:-12px;cursor:ns-resize}
+.qb-h--sw{left:-12px;bottom:-12px;cursor:nesw-resize}
+.qb-h--w {left:-12px;top:calc(50% - 4.5px);cursor:ew-resize}
+
+/* Selected vs editing: a picked-up paragraph moves by its body and wears a
+   move cursor; only a double-click trades that for the caret. */
+.qb--pick{cursor:move}
+.qb--pick .qb-t{cursor:move;user-select:none}
+.qb--edit{cursor:text}
+.qb--pick:focus,.qb--edit:focus{outline:none}
+
+/* The patch left over the paragraph's original position while it is being
+   edited. Separate from the editing box so that dragging the box does not
+   carry the cover with it and expose the words underneath. */
+.qb-cover{position:absolute;box-sizing:border-box;pointer-events:none;z-index:1}
+
+/* ── the restyled inspector controls ─────────────────────────────────────── */
+.swatches--grid{display:grid;grid-template-columns:repeat(5,26px);gap:7px;margin-top:9px}
+.swatches--grid .sw-c{width:26px;height:26px;border-radius:8px}
+/* The custom well: a native colour input dressed as one more swatch. */
+.sw-c--custom{position:relative;overflow:hidden;cursor:pointer;
+  background:conic-gradient(#f87171,#facc15,#4ade80,#38bdf8,#a78bfa,#f87171)}
+.sw-c--custom input{position:absolute;inset:-6px;width:auto;height:auto;
+  opacity:0;cursor:pointer}
+.ins-val{font-family:var(--fm);font-size:12px;color:var(--ink-2);
+  min-width:18px;text-align:right}
+.num{font-family:var(--fm);font-size:12.5px;color:var(--ink);width:74px;
+  background:var(--s-1);border:1px solid var(--line);border-radius:var(--r-sm);
+  padding:5px 8px}
+.num:focus-visible{outline:none;box-shadow:var(--ring)}
+.styles{display:flex;gap:6px}
+.style-b{width:30px;height:28px;display:grid;place-items:center;
+  font-size:13px;color:var(--ink-2);background:var(--s-1);
+  border:1px solid var(--line);border-radius:var(--r-sm);cursor:pointer;
+  transition:background .12s var(--ease),color .12s var(--ease)}
+.style-b:hover{color:var(--ink)}
+.style-b[aria-pressed="true"]{background:var(--acc-soft);color:var(--acc);
+  border-color:var(--acc-line,var(--line))}
+.style-b b{font-weight:700}.style-b i{font-style:italic;font-family:Georgia,serif}
+
+/* The annotation handles and text boxes sit above the selectable words now.
+   Under them, a grip's press landed on a transparent span instead — dragging a
+   corner started a browser text selection, and a double-click on a text box
+   never reached it. pointer-events:none containers stay transparent wherever
+   there is nothing interactive, so bare paper still selects text. */
+.ov-html,.ov-marks{z-index:2}
+.ov-h{pointer-events:auto;user-select:none}
+.ov-sel{pointer-events:none}

@@ -1,0 +1,163 @@
+/* Chrome shared by every content page: header, nav, buttons, the converter
+   dropdown. The editor keeps its own shell — it is an application, not a page. */
+
+body{background:var(--bg);color:var(--ink);font-family:var(--f);font-size:15px;
+     line-height:1.6;-webkit-font-smoothing:antialiased;letter-spacing:-.005em}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px}
+
+/* ── buttons ───────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+     padding:10px 17px;background:var(--s-2);border-radius:var(--r);
+     font-size:13.5px;font-weight:500;transition:background .15s var(--ease)}
+.btn:hover{background:var(--s-3)}
+.btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.7;
+         stroke-linecap:round;stroke-linejoin:round;flex:none}
+.btn--primary{background:var(--acc);color:#fff}
+.btn--primary:hover{background:var(--acc-hi)}
+.btn--lg{padding:13px 22px;font-size:14.5px}
+
+/* ── shared layout primitives ──────────────────────────
+   The `q-` prefix marks the handful of things that belong to every page. They
+   used to exist twice — once inline in index.html and once in convert.css, with
+   the paddings already drifting apart (76px against 70px, 40px against 36px).
+   Anything defined here must not be redefined in a page-local stylesheet;
+   tools/check.mjs fails the build if it is.
+
+   Note these are classes, not element selectors. A bare `section {}` in a shared
+   sheet reaches into the editor and every future page, which is exactly the kind
+   of action at a distance that makes a stylesheet unsafe to touch. */
+.q-section{padding:72px 0;border-top:1px solid var(--line)}
+
+.q-head{max-width:62ch;margin-bottom:38px}
+.q-head h2{font-size:clamp(26px,3.3vw,33px);line-height:1.15;font-weight:600;
+           letter-spacing:-.03em}
+.q-head p{margin-top:12px;color:var(--ink-2);font-size:15.5px}
+
+.q-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:36px;counter-reset:s}
+.q-step{counter-increment:s}
+.q-step::before{content:counter(s,decimal-leading-zero);display:block;
+  font-family:var(--fm);font-size:12px;color:var(--acc);margin-bottom:12px;
+  padding-bottom:12px;border-bottom:1px solid var(--line)}
+.q-step b{display:block;font-size:16px;font-weight:600;letter-spacing:-.02em;margin-bottom:7px}
+.q-step p{color:var(--ink-2);font-size:14px}
+
+.q-ticks{margin-top:30px;display:flex;flex-direction:column;gap:14px}
+.q-ticks li{display:flex;align-items:center;gap:12px;list-style:none;font-size:15px}
+.q-ticks span{width:22px;height:22px;border-radius:50%;background:var(--acc);flex:none;
+              display:grid;place-items:center}
+.q-ticks span svg{width:12px;height:12px;stroke:#fff;fill:none;stroke-width:2.4;
+                  stroke-linecap:round;stroke-linejoin:round}
+
+/* The format badge. It lives here rather than in convert.css because the home
+   page's converter directory and the converter pages themselves both use it,
+   and two identical copies is precisely what this pass is removing. */
+.conv-chip{width:34px;height:34px;border-radius:var(--r-sm);flex:none;display:grid;
+           place-items:center;font-family:var(--fm);font-size:9.5px;font-weight:500;
+           color:#fff;letter-spacing:.02em}
+
+@media (max-width:900px){
+  .q-section{padding:54px 0}
+  .q-steps{grid-template-columns:1fr;gap:26px}
+}
+
+/* ── breadcrumbs ───────────────────────────────────────
+   Shared, not per-section. They used to live in the converter page's inline
+   style; when that moved into the generator the rules were left behind and an
+   unsized inline SVG grew to fill the viewport. */
+.crumbs{display:flex;align-items:center;gap:9px;padding:18px 0 0;font-size:13px;color:var(--ink-3)}
+.crumbs a{transition:color .13s var(--ease)}
+.crumbs a:hover{color:var(--ink-2)}
+.crumbs b{font-weight:400;color:var(--acc)}
+.crumbs svg{width:11px;height:11px;flex:none;stroke:var(--ink-3);fill:none;stroke-width:2;
+            stroke-linecap:round;stroke-linejoin:round}
+
+/* ── header ────────────────────────────────────────── */
+.head{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.82);
+      backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.head .wrap{height:60px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.head-actions{display:flex;align-items:center;gap:10px;flex:none}
+
+/* The editor's variant. Same markup, same nav — it only stops being sticky and
+   stops being centred on the text column, because inside the app it is a grid
+   row and the app is full-bleed. */
+.head--app{position:static;background:var(--bg);backdrop-filter:none}
+.head--app .wrap{max-width:none;padding:0 14px}
+
+/* The open document, shown between the nav and the actions. First thing to go
+   when the bar gets tight — the nav and the buttons both matter more. */
+.app-file{display:flex;align-items:baseline;gap:8px;min-width:0;
+          font-size:12px;color:var(--ink-3)}
+.app-file b{color:var(--ink-2);font-weight:450;white-space:nowrap;
+            overflow:hidden;text-overflow:ellipsis}
+@media (max-width:1240px){.app-file{display:none}}
+.logo{display:flex;align-items:center;gap:10px}
+.logo svg{display:block}
+.logo b{font-size:15px;font-weight:600;letter-spacing:-.02em}
+/* The nav itself has to span the header's full height, otherwise the stretched
+   trigger inside it only reaches the height of its own text. */
+.nav{display:flex;align-items:center;align-self:stretch;gap:26px;
+     font-size:13.5px;color:var(--ink-2)}
+.nav>a{transition:color .13s var(--ease)}
+.nav>a:hover{color:var(--ink)}
+
+/* ── converter dropdown ────────────────────────────────
+   Anchored to its own list item rather than the header, so the panel tracks the
+   trigger at any width. It stays in the DOM and is hidden with visibility so the
+   panel can be measured and animated instead of popping in. */
+/* The trigger stretches to the full header height so `top: 100%` lands on the
+   header's bottom edge — otherwise the panel emerges from the middle of the bar. */
+.drop{position:relative;align-self:stretch;display:flex;align-items:center}
+.drop-btn{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;
+          color:var(--ink-2);transition:color .13s var(--ease)}
+.drop-btn:hover,.drop[data-open] .drop-btn{color:var(--ink)}
+.drop-btn svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2;
+              stroke-linecap:round;stroke-linejoin:round;
+              transition:transform .22s var(--ease)}
+.drop[data-open] .drop-btn svg{transform:rotate(180deg)}
+
+.drop-panel{position:absolute;top:calc(100% + 10px);left:50%;
+            transform:translateX(-50%) translateY(-8px) scale(.98);
+            transform-origin:top center;
+            background:#fff;border-radius:var(--r-lg);padding:26px 30px;
+            box-shadow:0 0 0 1px rgba(0,0,0,.06),0 18px 50px rgba(0,0,0,.14);
+            display:grid;grid-template-columns:1fr 1fr;gap:10px 44px;
+            opacity:0;visibility:hidden;pointer-events:none;
+            transition:opacity .16s var(--ease),transform .24s var(--ease),
+                       visibility 0s linear .24s}
+.drop[data-open] .drop-panel{opacity:1;visibility:visible;pointer-events:auto;
+            transform:translateX(-50%) translateY(0) scale(1);
+            transition:opacity .16s var(--ease),transform .24s var(--ease),
+                       visibility 0s}
+/* A small bridge over the gap, so the pointer can travel from the trigger to
+   the panel without passing through dead space and closing it. */
+.drop-panel::before{content:'';position:absolute;left:0;right:0;top:-10px;height:10px}
+
+/* The Forms panel has one column, so it must not inherit the two-column grid
+   or the single column stretches to half the width of the converter panel. */
+.drop-panel--one{grid-template-columns:1fr;min-width:190px;padding:20px 24px}
+
+/* The section the current page belongs to stays lit even when the panel is shut,
+   so you can tell where you are without opening anything. */
+.drop-btn[data-section]{color:var(--acc)}
+.drop-btn[data-section]:hover{color:var(--acc-hi)}
+
+.drop-col{display:flex;flex-direction:column}
+.drop-col h4{font-size:14px;font-weight:600;letter-spacing:-.02em;color:var(--ink);
+             margin-bottom:14px;white-space:nowrap}
+.drop-col a{padding:7px 0;font-size:14px;color:var(--ink-2);white-space:nowrap;
+            transition:color .13s var(--ease)}
+.drop-col a:hover{color:var(--acc)}
+.drop-col a[aria-current=page]{color:var(--acc);font-weight:500}
+.drop-all{margin-top:8px;font-size:14px;color:var(--acc);text-decoration:underline;
+          text-underline-offset:3px}
+
+/* Both columns run the same animation with no stagger between them. The 50ms
+   offset the second one used to carry was enough to read as a different, laggier
+   motion rather than as one panel arriving — and every Forms panel has a single
+   column, so this also keeps the two menus identical. */
+.drop[data-open] .drop-col{animation:dropIn .3s var(--ease) both}
+@keyframes dropIn{from{opacity:0;transform:translateY(6px)}}
+
+@media (max-width:900px){
+  .nav{display:none}
+}

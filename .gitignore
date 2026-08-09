@@ -1,0 +1,17 @@
+node_modules/
+.vite/
+dist/
+*.tsbuildinfo
+
+# Source maps are build output; the bundle they belong to is committed so the
+# site can be served straight from the repository, but the maps are large and
+# nobody debugging production needs them in version control.
+assets/*.map
+assets/chunks/*.map
+
+.DS_Store
+Thumbs.db
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

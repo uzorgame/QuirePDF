@@ -1,0 +1,1116 @@
+{
+  "generated": "2026-08-08",
+  "forms": {
+    "940": {
+      "code": "940",
+      "name": "Employer's Annual Federal Unemployment Tax Return",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Payroll"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-940",
+      "bytes": 833678,
+      "pages": 3,
+      "fields": 97,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "941": {
+      "code": "941",
+      "name": "Employer's Quarterly Federal Tax Return",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Payroll"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-941",
+      "bytes": 841648,
+      "pages": 3,
+      "fields": 116,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "990": {
+      "code": "990",
+      "name": "Return of Organization Exempt From Income Tax",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Non-profit"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-990",
+      "bytes": 796676,
+      "pages": 12,
+      "fields": 1075,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "1040": {
+      "code": "1040",
+      "name": "U.S. Individual Income Tax Return",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Annual"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-1040",
+      "bytes": 220237,
+      "pages": 2,
+      "fields": 199,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "1065": {
+      "code": "1065",
+      "name": "U.S. Return of Partnership Income",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Business"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-1065",
+      "bytes": 334608,
+      "pages": 6,
+      "fields": 440,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "1096": {
+      "code": "1096",
+      "name": "Annual Summary and Transmittal of U.S. Information Returns",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Reporting"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-1096",
+      "bytes": 534901,
+      "pages": 3,
+      "fields": 55,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "1120": {
+      "code": "1120",
+      "name": "U.S. Corporation Income Tax Return",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Business"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-1120",
+      "bytes": 340034,
+      "pages": 6,
+      "fields": 481,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "2553": {
+      "code": "2553",
+      "name": "Election by a Small Business Corporation",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Business"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-2553",
+      "bytes": 123289,
+      "pages": 4,
+      "fields": 100,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "2848": {
+      "code": "2848",
+      "name": "Power of Attorney and Declaration of Representative",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Authorisation"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-2848",
+      "bytes": 142587,
+      "pages": 2,
+      "fields": 92,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "4868": {
+      "code": "4868",
+      "name": "Application for Automatic Extension of Time to File",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Extensions"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-4868",
+      "bytes": 529415,
+      "pages": 4,
+      "fields": 17,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "7004": {
+      "code": "7004",
+      "name": "Application for Automatic Extension for Business Returns",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Business"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-7004",
+      "bytes": 76923,
+      "pages": 1,
+      "fields": 26,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "8332": {
+      "code": "8332",
+      "name": "Release of Claim to Exemption for Child",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Family"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-8332",
+      "bytes": 74144,
+      "pages": 2,
+      "fields": 11,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "8822": {
+      "code": "8822",
+      "name": "Change of Address",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Records"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-8822",
+      "bytes": 80702,
+      "pages": 2,
+      "fields": 25,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "8829": {
+      "code": "8829",
+      "name": "Expenses for Business Use of Your Home",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Deductions"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-8829",
+      "bytes": 82821,
+      "pages": 1,
+      "fields": 58,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "8862": {
+      "code": "8862",
+      "name": "Information to Claim Certain Credits After Disallowance",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Credits"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-8862",
+      "bytes": 153254,
+      "pages": 3,
+      "fields": 109,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "8863": {
+      "code": "8863",
+      "name": "Education Credits",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Education"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-8863",
+      "bytes": 111888,
+      "pages": 2,
+      "fields": 77,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "8949": {
+      "code": "8949",
+      "name": "Sales and Other Dispositions of Capital Assets",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Investments"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-8949",
+      "bytes": 128770,
+      "pages": 2,
+      "fields": 202,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "8962": {
+      "code": "8962",
+      "name": "Premium Tax Credit (PTC)",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Health"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-8962",
+      "bytes": 117715,
+      "pages": 2,
+      "fields": 141,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "9465": {
+      "code": "9465",
+      "name": "Installment Agreement Request",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Payments"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-9465",
+      "bytes": 115848,
+      "pages": 2,
+      "fields": 66,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "w-9": {
+      "code": "W-9",
+      "name": "Request for Taxpayer Identification Number and Certification",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Contractors"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-w-9",
+      "bytes": 140815,
+      "pages": 6,
+      "fields": 23,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "w-4": {
+      "code": "W-4",
+      "name": "Employee's Withholding Certificate",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Payroll"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-w-4",
+      "bytes": 208845,
+      "pages": 5,
+      "fields": 48,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "w-2": {
+      "code": "W-2",
+      "name": "Wage and Tax Statement",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Payroll"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-w-2",
+      "bytes": 2150321,
+      "pages": 11,
+      "fields": 568,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "w-7": {
+      "code": "W-7",
+      "name": "Application for IRS Individual Taxpayer Identification Number",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Records"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-w-7",
+      "bytes": 97654,
+      "pages": 1,
+      "fields": 69,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "w-8ben": {
+      "code": "W-8BEN",
+      "name": "Certificate of Foreign Status of Beneficial Owner",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "International"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-w-8-ben",
+      "bytes": 67700,
+      "pages": 1,
+      "fields": 23,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "1040-sr": {
+      "code": "1040-SR",
+      "name": "U.S. Tax Return for Seniors",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Annual"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-1040-sr",
+      "bytes": 233429,
+      "pages": 4,
+      "fields": 200,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "1040-es": {
+      "code": "1040-ES",
+      "name": "Estimated Tax for Individuals",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Quarterly"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-1040-es",
+      "bytes": 331490,
+      "pages": 16,
+      "fields": 118,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "1040-x": {
+      "code": "1040-X",
+      "name": "Amended U.S. Individual Income Tax Return",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Amendments"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-1040x",
+      "bytes": 164571,
+      "pages": 2,
+      "fields": 166,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "1099-misc": {
+      "code": "1099-MISC",
+      "name": "Miscellaneous Information",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Reporting"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-1099-misc",
+      "bytes": 561788,
+      "pages": 6,
+      "fields": 179,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "1099-nec": {
+      "code": "1099-NEC",
+      "name": "Nonemployee Compensation",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Contractors"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-1099-nec",
+      "bytes": 537467,
+      "pages": 6,
+      "fields": 140,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "1099-int": {
+      "code": "1099-INT",
+      "name": "Interest Income",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Reporting"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-1099-int",
+      "bytes": 538774,
+      "pages": 7,
+      "fields": 127,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "1099-div": {
+      "code": "1099-DIV",
+      "name": "Dividends and Distributions",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Reporting"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-1099-div",
+      "bytes": 542425,
+      "pages": 6,
+      "fields": 140,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "1098-t": {
+      "code": "1098-T",
+      "name": "Tuition Statement",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Education"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-1098-t",
+      "bytes": 511215,
+      "pages": 4,
+      "fields": 56,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "1095-a": {
+      "code": "1095-A",
+      "name": "Health Insurance Marketplace Statement",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Health"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-1095-a",
+      "bytes": 492196,
+      "pages": 3,
+      "fields": 81,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "1120-s": {
+      "code": "1120-S",
+      "name": "U.S. Income Tax Return for an S Corporation",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Business"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-1120-s",
+      "bytes": 267113,
+      "pages": 5,
+      "fields": 390,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "ss-4": {
+      "code": "SS-4",
+      "name": "Application for Employer Identification Number",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Business"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-ss-4",
+      "bytes": 122921,
+      "pages": 2,
+      "fields": 89,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "4506-t": {
+      "code": "4506-T",
+      "name": "Request for Transcript of Tax Return",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Records"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-4506-t",
+      "bytes": 680124,
+      "pages": 2,
+      "fields": 29,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "1023-ez": {
+      "code": "1023-EZ",
+      "name": "Streamlined Application for Recognition of Exemption",
+      "agency": "Internal Revenue Service",
+      "category": "Tax & IRS",
+      "tags": [
+        "IRS",
+        "Non-profit"
+      ],
+      "source": "https://www.irs.gov/forms-pubs/about-form-1023-ez",
+      "bytes": 524663,
+      "pages": 3,
+      "fields": 1,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "i-9": {
+      "code": "I-9",
+      "name": "Employment Eligibility Verification",
+      "agency": "U.S. Citizenship and Immigration Services",
+      "category": "Government",
+      "tags": [
+        "Employment"
+      ],
+      "source": "https://www.uscis.gov/i-9",
+      "bytes": 524095,
+      "pages": 4,
+      "fields": 128,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "i-90": {
+      "code": "I-90",
+      "name": "Application to Replace Permanent Resident Card",
+      "agency": "U.S. Citizenship and Immigration Services",
+      "category": "Government",
+      "tags": [
+        "Immigration"
+      ],
+      "source": "https://www.uscis.gov/i-90",
+      "bytes": 508291,
+      "pages": 7,
+      "fields": 195,
+      "writable": false,
+      "fetched": "2026-08-08"
+    },
+    "i-130": {
+      "code": "I-130",
+      "name": "Petition for Alien Relative",
+      "agency": "U.S. Citizenship and Immigration Services",
+      "category": "Government",
+      "tags": [
+        "Immigration"
+      ],
+      "source": "https://www.uscis.gov/i-130",
+      "bytes": 729861,
+      "pages": 12,
+      "fields": 450,
+      "writable": false,
+      "fetched": "2026-08-08"
+    },
+    "i-131": {
+      "code": "I-131",
+      "name": "Application for Travel Document",
+      "agency": "U.S. Citizenship and Immigration Services",
+      "category": "Government",
+      "tags": [
+        "Immigration"
+      ],
+      "source": "https://www.uscis.gov/i-131",
+      "bytes": 652991,
+      "pages": 14,
+      "fields": 339,
+      "writable": false,
+      "fetched": "2026-08-08"
+    },
+    "i-134": {
+      "code": "I-134",
+      "name": "Declaration of Financial Support",
+      "agency": "U.S. Citizenship and Immigration Services",
+      "category": "Government",
+      "tags": [
+        "Immigration"
+      ],
+      "source": "https://www.uscis.gov/i-134",
+      "bytes": 511302,
+      "pages": 10,
+      "fields": 250,
+      "writable": false,
+      "fetched": "2026-08-08"
+    },
+    "i-140": {
+      "code": "I-140",
+      "name": "Immigrant Petition for Alien Worker",
+      "agency": "U.S. Citizenship and Immigration Services",
+      "category": "Government",
+      "tags": [
+        "Immigration",
+        "Employment"
+      ],
+      "source": "https://www.uscis.gov/i-140",
+      "bytes": 525476,
+      "pages": 8,
+      "fields": 261,
+      "writable": false,
+      "fetched": "2026-08-08"
+    },
+    "i-485": {
+      "code": "I-485",
+      "name": "Application to Register Permanent Residence",
+      "agency": "U.S. Citizenship and Immigration Services",
+      "category": "Government",
+      "tags": [
+        "Immigration"
+      ],
+      "source": "https://www.uscis.gov/i-485",
+      "bytes": 1203646,
+      "pages": 24,
+      "fields": 760,
+      "writable": false,
+      "fetched": "2026-08-08"
+    },
+    "i-539": {
+      "code": "I-539",
+      "name": "Application to Extend or Change Nonimmigrant Status",
+      "agency": "U.S. Citizenship and Immigration Services",
+      "category": "Government",
+      "tags": [
+        "Immigration"
+      ],
+      "source": "https://www.uscis.gov/i-539",
+      "bytes": 495022,
+      "pages": 7,
+      "fields": 159,
+      "writable": false,
+      "fetched": "2026-08-08"
+    },
+    "i-751": {
+      "code": "I-751",
+      "name": "Petition to Remove Conditions on Residence",
+      "agency": "U.S. Citizenship and Immigration Services",
+      "category": "Government",
+      "tags": [
+        "Immigration"
+      ],
+      "source": "https://www.uscis.gov/i-751",
+      "bytes": 627011,
+      "pages": 11,
+      "fields": 329,
+      "writable": false,
+      "fetched": "2026-08-08"
+    },
+    "i-765": {
+      "code": "I-765",
+      "name": "Application for Employment Authorization",
+      "agency": "U.S. Citizenship and Immigration Services",
+      "category": "Government",
+      "tags": [
+        "Immigration",
+        "Employment"
+      ],
+      "source": "https://www.uscis.gov/i-765",
+      "bytes": 467424,
+      "pages": 7,
+      "fields": 161,
+      "writable": false,
+      "fetched": "2026-08-08"
+    },
+    "i-864": {
+      "code": "I-864",
+      "name": "Affidavit of Support",
+      "agency": "U.S. Citizenship and Immigration Services",
+      "category": "Government",
+      "tags": [
+        "Immigration"
+      ],
+      "source": "https://www.uscis.gov/i-864",
+      "bytes": 540131,
+      "pages": 12,
+      "fields": 219,
+      "writable": false,
+      "fetched": "2026-08-08"
+    },
+    "i-912": {
+      "code": "I-912",
+      "name": "Request for Fee Waiver",
+      "agency": "U.S. Citizenship and Immigration Services",
+      "category": "Government",
+      "tags": [
+        "Immigration"
+      ],
+      "source": "https://www.uscis.gov/i-912",
+      "bytes": 502386,
+      "pages": 8,
+      "fields": 220,
+      "writable": false,
+      "fetched": "2026-08-08"
+    },
+    "n-400": {
+      "code": "N-400",
+      "name": "Application for Naturalization",
+      "agency": "U.S. Citizenship and Immigration Services",
+      "category": "Government",
+      "tags": [
+        "Immigration"
+      ],
+      "source": "https://www.uscis.gov/n-400",
+      "bytes": 776244,
+      "pages": 14,
+      "fields": 440,
+      "writable": false,
+      "fetched": "2026-08-08"
+    },
+    "n-565": {
+      "code": "N-565",
+      "name": "Application for Replacement Naturalization Document",
+      "agency": "U.S. Citizenship and Immigration Services",
+      "category": "Government",
+      "tags": [
+        "Immigration"
+      ],
+      "source": "https://www.uscis.gov/n-565",
+      "bytes": 435889,
+      "pages": 7,
+      "fields": 139,
+      "writable": false,
+      "fetched": "2026-08-08"
+    },
+    "n-600": {
+      "code": "N-600",
+      "name": "Application for Certificate of Citizenship",
+      "agency": "U.S. Citizenship and Immigration Services",
+      "category": "Government",
+      "tags": [
+        "Immigration"
+      ],
+      "source": "https://www.uscis.gov/n-600",
+      "bytes": 731639,
+      "pages": 16,
+      "fields": 449,
+      "writable": false,
+      "fetched": "2026-08-08"
+    },
+    "g-28": {
+      "code": "G-28",
+      "name": "Notice of Entry of Appearance as Attorney",
+      "agency": "U.S. Citizenship and Immigration Services",
+      "category": "Government",
+      "tags": [
+        "Immigration"
+      ],
+      "source": "https://www.uscis.gov/g-28",
+      "bytes": 396003,
+      "pages": 4,
+      "fields": 101,
+      "writable": false,
+      "fetched": "2026-08-08"
+    },
+    "g-1145": {
+      "code": "G-1145",
+      "name": "Request for Electronic Notification",
+      "agency": "U.S. Citizenship and Immigration Services",
+      "category": "Government",
+      "tags": [
+        "Immigration"
+      ],
+      "source": "https://www.uscis.gov/g-1145",
+      "bytes": 250968,
+      "pages": 1,
+      "fields": 6,
+      "writable": false,
+      "fetched": "2026-08-08"
+    },
+    "ss-5": {
+      "code": "SS-5",
+      "name": "Application for a Social Security Card",
+      "agency": "Social Security Administration",
+      "category": "Government",
+      "tags": [
+        "Records"
+      ],
+      "source": "https://www.ssa.gov/forms/ss-5.html",
+      "bytes": 153041,
+      "pages": 5,
+      "fields": 70,
+      "writable": false,
+      "fetched": "2026-08-08"
+    },
+    "ssa-1724": {
+      "code": "SSA-1724",
+      "name": "Claim for Amounts Due in the Case of a Deceased Beneficiary",
+      "agency": "Social Security Administration",
+      "category": "Government",
+      "tags": [
+        "Benefits"
+      ],
+      "source": "https://www.ssa.gov/forms/ssa-1724.html",
+      "bytes": 78634,
+      "pages": 3,
+      "fields": 53,
+      "writable": false,
+      "fetched": "2026-08-08"
+    },
+    "ssa-561": {
+      "code": "SSA-561-U2",
+      "name": "Request for Reconsideration",
+      "agency": "Social Security Administration",
+      "category": "Government",
+      "tags": [
+        "Benefits"
+      ],
+      "source": "https://www.ssa.gov/forms/ssa-561.html",
+      "bytes": 108247,
+      "pages": 4,
+      "fields": 68,
+      "writable": false,
+      "fetched": "2026-08-08"
+    },
+    "ssa-827": {
+      "code": "SSA-827",
+      "name": "Authorization to Disclose Information",
+      "agency": "Social Security Administration",
+      "category": "Government",
+      "tags": [
+        "Benefits",
+        "Records"
+      ],
+      "source": "https://www.ssa.gov/forms/ssa-827.html",
+      "bytes": 65143,
+      "pages": 2,
+      "fields": 26,
+      "writable": false,
+      "fetched": "2026-08-08"
+    },
+    "ssa-44": {
+      "code": "SSA-44",
+      "name": "Medicare Income-Related Monthly Adjustment",
+      "agency": "Social Security Administration",
+      "category": "Government",
+      "tags": [
+        "Benefits",
+        "Health"
+      ],
+      "source": "https://www.ssa.gov/forms/ssa-44.html",
+      "bytes": 139024,
+      "pages": 8,
+      "fields": 54,
+      "writable": false,
+      "fetched": "2026-08-08"
+    },
+    "ssa-795": {
+      "code": "SSA-795",
+      "name": "Statement of Claimant or Other Person",
+      "agency": "Social Security Administration",
+      "category": "Government",
+      "tags": [
+        "Benefits"
+      ],
+      "source": "https://www.ssa.gov/forms/ssa-795.html",
+      "bytes": 203797,
+      "pages": 2,
+      "fields": 17,
+      "writable": false,
+      "fetched": "2026-08-08"
+    },
+    "ssa-89": {
+      "code": "SSA-89",
+      "name": "Authorization for Social Security Number Verification",
+      "agency": "Social Security Administration",
+      "category": "Government",
+      "tags": [
+        "Records"
+      ],
+      "source": "https://www.ssa.gov/forms/ssa-89.html",
+      "bytes": 52702,
+      "pages": 1,
+      "fields": 23,
+      "writable": false,
+      "fetched": "2026-08-08"
+    },
+    "cms-40b": {
+      "code": "CMS-40B",
+      "name": "Application for Enrollment in Medicare Part B",
+      "agency": "Centers for Medicare & Medicaid Services",
+      "category": "Government",
+      "tags": [
+        "Social Security",
+        "Health"
+      ],
+      "source": "https://www.cms.gov/medicare/forms-notices/cms-forms/cms-40b-application-enrollment-medicare-part-b",
+      "bytes": 108533,
+      "pages": 3,
+      "fields": 47,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "cms-l564": {
+      "code": "CMS-L564",
+      "name": "Request for Employment Information",
+      "agency": "Centers for Medicare & Medicaid Services",
+      "category": "Government",
+      "tags": [
+        "Social Security",
+        "Employment & HR"
+      ],
+      "source": "https://www.cms.gov/medicare/forms-notices/cms-forms/cms-l564-request-employment-information",
+      "bytes": 99203,
+      "pages": 2,
+      "fields": 45,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "ds-11": {
+      "code": "DS-11",
+      "name": "Application for a U.S. Passport",
+      "agency": "U.S. Department of State",
+      "category": "Government",
+      "tags": [
+        "Passports & Visas"
+      ],
+      "source": "https://travel.state.gov/content/travel/en/passports/how-apply/forms.html",
+      "bytes": 2568395,
+      "pages": 6,
+      "fields": 84,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "ds-82": {
+      "code": "DS-82",
+      "name": "U.S. Passport Renewal Application by Mail",
+      "agency": "U.S. Department of State",
+      "category": "Government",
+      "tags": [
+        "Passports & Visas"
+      ],
+      "source": "https://travel.state.gov/content/travel/en/passports/how-apply/forms.html",
+      "bytes": 1635843,
+      "pages": 6,
+      "fields": 71,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "ds-64": {
+      "code": "DS-64",
+      "name": "Statement Regarding a Lost or Stolen Passport",
+      "agency": "U.S. Department of State",
+      "category": "Government",
+      "tags": [
+        "Passports & Visas"
+      ],
+      "source": "https://travel.state.gov/content/travel/en/passports/how-apply/forms.html",
+      "bytes": 3225751,
+      "pages": 2,
+      "fields": 0,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "ds-3053": {
+      "code": "DS-3053",
+      "name": "Statement of Consent for a Child’s Passport",
+      "agency": "U.S. Department of State",
+      "category": "Government",
+      "tags": [
+        "Passports & Visas",
+        "Child Authorizations"
+      ],
+      "source": "https://travel.state.gov/content/travel/en/passports/how-apply/forms.html",
+      "bytes": 2518667,
+      "pages": 2,
+      "fields": 19,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "ds-5504": {
+      "code": "DS-5504",
+      "name": "Passport Correction or Name Change Application",
+      "agency": "U.S. Department of State",
+      "category": "Government",
+      "tags": [
+        "Passports & Visas"
+      ],
+      "source": "https://travel.state.gov/content/travel/en/passports/how-apply/forms.html",
+      "bytes": 1501634,
+      "pages": 6,
+      "fields": 79,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "ds-5525": {
+      "code": "DS-5525",
+      "name": "Statement of Urgent Travel",
+      "agency": "U.S. Department of State",
+      "category": "Government",
+      "tags": [
+        "Passports & Visas"
+      ],
+      "source": "https://travel.state.gov/content/travel/en/passports/how-apply/forms.html",
+      "bytes": 1305319,
+      "pages": 2,
+      "fields": 45,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "va-21-526ez": {
+      "code": "21-526EZ",
+      "name": "Application for Disability Compensation",
+      "agency": "Department of Veterans Affairs",
+      "category": "Government",
+      "tags": [
+        "Veterans",
+        "Benefits"
+      ],
+      "source": "https://www.va.gov/find-forms/about-form-21-526ez/",
+      "bytes": 1927445,
+      "pages": 15,
+      "fields": 345,
+      "writable": true,
+      "fetched": "2026-08-08"
+    },
+    "va-21-4138": {
+      "code": "21-4138",
+      "name": "Statement in Support of Claim",
+      "agency": "Department of Veterans Affairs",
+      "category": "Government",
+      "tags": [
+        "Veterans",
+        "Benefits"
+      ],
+      "source": "https://www.va.gov/find-forms/about-form-21-4138/",
+      "bytes": 881905,
+      "pages": 2,
+      "fields": 33,
+      "writable": true,
+      "fetched": "2026-08-08"
+    }
+  }
+}

@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PDF Editor — edit, sign and export your PDF | Quire</title>
+<meta name="description" content="Edit text, sign, highlight, redact and export your PDF in the browser. Nothing is uploaded.">
+<link rel="canonical" href="https://uz-or.com/quirePDF/editor.html">
+<meta name="theme-color" content="#2563eb">
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./assets/tokens.css">
+<link rel="stylesheet" href="./assets/site.css">
+<link rel="stylesheet" href="./assets/editor.css">
+<link rel="stylesheet" href="./assets/footer.css">
+</head>
+<body>
+<div class="app">
+
+  <header class="head head--app">
+  <div class="wrap">
+    <a class="logo" href="./" aria-label="Quire home">
+      <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
+        <path d="M3 4a3 3 0 0 1 3-3h13.5L29 10.5V28a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V4z" fill="#2563EB"/>
+        <path d="M19.5 1 29 10.5h-6.5a3 3 0 0 1-3-3V1z" fill="#1D4ED8"/>
+        <path d="M16 15.5v9M11.5 20h9" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/>
+      </svg>
+      <b>Quire</b>
+    </a>
+
+    <nav class="nav">
+      <div class="drop" data-drop>
+        <button class="drop-btn" aria-expanded="false" aria-haspopup="true">
+          PDF Converter
+          <svg viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></svg>
+        </button>
+        <div class="drop-panel">
+        <div class="drop-col">
+          <h4>Convert from PDF</h4>
+          <a href="./convert/pdf-to-word.html">PDF to Word</a>
+          <a href="./convert/pdf-to-excel.html">PDF to Excel</a>
+          <a href="./convert/pdf-to-pptx.html">PDF to PPTX</a>
+          <a href="./convert/pdf-to-jpg.html">PDF to JPG</a>
+          <a href="./convert/pdf-to-png.html">PDF to PNG</a>
+          <a href="./convert/pdf-to-dxf.html">PDF to DXF</a>
+        </div>
+        <div class="drop-col">
+          <h4>Convert to PDF</h4>
+          <a href="./convert/image-to-pdf.html">Image to PDF</a>
+          <a href="./convert/word-to-pdf.html">Word to PDF</a>
+          <a href="./convert/jpg-to-pdf.html">JPG to PDF</a>
+          <a href="./convert/png-to-pdf.html">PNG to PDF</a>
+          <a href="./convert/excel-to-pdf.html">Excel to PDF</a>
+          <a href="./convert/pptx-to-pdf.html">PPTX to PDF</a>
+          <a class="drop-all" href="./converter.html">View all converters</a>
+        </div>
+        </div>
+      </div>
+
+      <div class="drop" data-drop>
+        <button class="drop-btn" aria-expanded="false" aria-haspopup="true">
+          Forms
+          <svg viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></svg>
+        </button>
+        <div class="drop-panel drop-panel--one">
+          <div class="drop-col">
+            <a href="./forms/w-9.html">W-9</a>
+            <a href="./forms/ds-11.html">DS-11</a>
+            <a href="./forms/1099-misc.html">1099-MISC</a>
+            <a class="drop-all" href="./forms.html">View all forms</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- A nav item named after a thing should open that thing. "PDF Editor"
+           used to scroll the home page to a list of features, and "Privacy" to
+           a paragraph about privacy while the actual policy sat unreachable in
+           the footer — both are now the page they name. Only the two that
+           genuinely are sections of the home page still jump to anchors. -->
+      <a href="./editor.html">PDF Editor</a>
+      <a href="./#how">How it works</a>
+      <a href="./#faq">FAQ</a>
+      <a href="./privacy.html">Privacy</a>
+    </nav>
+
+    <div class="app-file"><b id="fileName">Untitled</b><span id="fileMeta">—</span></div>
+
+    <div class="head-actions">
+      <span class="badge" id="docBadge"><i></i>Nothing uploaded</span>
+      <button class="btn" id="openBtn">
+        <svg viewBox="0 0 24 24"><path d="M3.5 7.5V19a1.5 1.5 0 0 0 1.5 1.5h14a1.5 1.5 0 0 0 1.5-1.5V9a1.5 1.5 0 0 0-1.5-1.5h-8L9 4.5H5A1.5 1.5 0 0 0 3.5 6z"/></svg>
+        Open
+      </button>
+      <button class="btn" id="newBtn">
+        <svg viewBox="0 0 24 24"><path d="M6.5 2.5h7.5L19.5 8v13.5h-13z"/><path d="M14 2.5V8h5.5"/><path d="M12.5 12v6M9.5 15h6"/></svg>
+        New
+      </button>
+      <button class="btn btn--primary" id="exportBtn">
+        <svg viewBox="0 0 24 24"><path d="M12 3.5v11M8 10.5l4 4 4-4"/><path d="M4.5 16.5v2.5a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5v-2.5"/></svg>
+        Export
+      </button>
+    </div>
+  </div>
+</header>
+
+  <div class="bar" id="bar">
+
+    <button class="tool" data-tip="Pages" data-desc="Insert a blank page after this one" data-key="P"><svg viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="7.5" height="15" rx="1.6"/><path d="M14.5 7.5h6M14.5 11h6M14.5 14.5h6M14.5 18h3.5"/></svg><i>Pages</i></button>
+    <button class="tool" aria-pressed="true" data-tip="Select" data-desc="Pick and move anything" data-key="V"><svg viewBox="0 0 24 24"><path d="M6.5 3.4 19 11.2l-5.6 1.2-2 5.5z"/></svg><i>Select</i></button>
+
+    <span class="sep"></span>
+
+    <button class="tool" disabled data-tip="Undo" data-key="Ctrl Z"><svg viewBox="0 0 24 24"><path d="M4 8.5h10.5a5 5 0 0 1 0 10H8.5"/><path d="M7.5 4.5 3.5 8.5l4 4"/></svg><i>Undo</i></button>
+    <button class="tool" disabled data-tip="Redo" data-key="Ctrl Y"><svg viewBox="0 0 24 24"><path d="M20 8.5H9.5a5 5 0 0 0 0 10h6"/><path d="M16.5 4.5l4 4-4 4"/></svg><i>Redo</i></button>
+
+    <span class="sep"></span>
+
+    <button class="tool" data-tip="Add text" data-desc="Drop a new text box" data-key="T"><svg viewBox="0 0 24 24"><path d="M3.5 7V4.5h11V7M9 4.5v14M6.5 18.5h5"/><path d="M18.5 13.5v6M15.5 16.5h6"/></svg><i>Add text</i></button>
+    <button class="tool" data-tip="Edit text" data-desc="Change text already in the PDF" data-key="E"><svg viewBox="0 0 24 24"><path d="M3 7V4.5h10V7M8 4.5v11M6 15.5h4"/><path d="M13.5 20.5l-3 .7.7-3 6.6-6.6a1.7 1.7 0 0 1 2.4 0l.9.9a1.7 1.7 0 0 1 0 2.4z"/></svg><i>Edit text</i></button>
+    <button class="tool" data-tip="Draw" data-desc="Freehand pen" data-key="D"><svg viewBox="0 0 24 24"><path d="M4 20.2l.9-4 11-11a2 2 0 0 1 2.8 0l1.1 1.1a2 2 0 0 1 0 2.8l-11 11z"/><path d="M14.8 6.2l3 3"/></svg><i>Draw</i></button>
+    <button class="tool" data-tip="Eraser" data-desc="Remove your own marks" data-key="X"><svg viewBox="0 0 24 24"><path d="M9.5 20.5H5.9L3.4 18a1.6 1.6 0 0 1 0-2.3L13.9 5.2a1.6 1.6 0 0 1 2.3 0l4.6 4.6a1.6 1.6 0 0 1 0 2.3L12.6 20.5"/><path d="M8.7 10.4l5 5M9.5 20.5h11"/></svg><i>Eraser</i></button>
+    <button class="tool" data-tip="Highlight" data-desc="Mark a passage" data-key="H"><svg viewBox="0 0 24 24"><path d="M12.4 14.6 8.6 10.8l6.6-6.6a1.9 1.9 0 0 1 2.7 0l1.1 1.1a1.9 1.9 0 0 1 0 2.7z"/><path d="M8.6 10.8 6 13.4l.9 3.3 3.3.9 2.2-3"/><path d="M3.5 20.5h17"/></svg><i>Highlight</i></button>
+    <button class="tool" data-tip="Shapes" data-desc="Rectangles, circles, arrows" data-key="R"><svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="5.3"/><rect x="10.9" y="10.9" width="9.6" height="9.6" rx="1.8"/></svg><i>Shapes</i></button>
+    <button class="tool" data-tip="Image" data-desc="Place a picture or logo" data-key="I"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="2.2"/><circle cx="8.4" cy="9.7" r="1.7"/><path d="M3.4 16.8l4.8-4.8 3.3 3.3 3.6-3.6 5.6 5.6"/></svg><i>Image</i></button>
+    <button class="tool" data-tip="Link" data-desc="Turn a region into a hyperlink" data-key="K"><svg viewBox="0 0 24 24"><path d="M10.2 13.8a4.3 4.3 0 0 0 6.1 0l2.6-2.6a4.3 4.3 0 1 0-6.1-6.1l-1.4 1.4"/><path d="M13.8 10.2a4.3 4.3 0 0 0-6.1 0l-2.6 2.6a4.3 4.3 0 1 0 6.1 6.1l1.4-1.4"/></svg><i>Link</i></button>
+
+    <span class="sep"></span>
+
+    <button class="tool" data-tip="Sign" data-desc="Draw, type or upload a signature" data-key="G"><svg viewBox="0 0 24 24"><path d="M3 16.8c3.4 0 2.9-11.3 6.3-11.3 2.6 0 1.6 7.9 4.1 7.9 2 0 2-3.9 4.2-3.9 1.5 0 2 2 3.4 2"/><path d="M3 20.5h18"/></svg><i>Sign</i></button>
+    <button class="tool" data-tip="Stamp" data-desc="Approved, Draft, Confidential" data-key="M"><svg viewBox="0 0 24 24"><path d="M8.6 4h6.8a1.9 1.9 0 0 1 1.9 2.1l-.6 5.4H7.3l-.6-5.4A1.9 1.9 0 0 1 8.6 4z"/><rect x="3.8" y="11.5" width="16.4" height="4.6" rx="1.6"/><path d="M5.5 20h13"/></svg><i>Stamp</i></button>
+    <button class="tool" data-tip="Redact" data-desc="Black out text permanently" data-key="B"><svg viewBox="0 0 24 24"><path d="M3.5 5h11"/><rect class="solid" x="3.5" y="9" width="17" height="6" rx="1.2"/><path d="M3.5 19h13"/></svg><i>Redact</i></button>
+    <button class="tool" data-tip="Fields" data-desc="Fillable form inputs" data-key="F"><svg viewBox="0 0 24 24"><rect x="3" y="7.5" width="18" height="9" rx="2.2"/><path d="M7 10.5v3M9.5 12h7"/></svg><i>Fields</i></button>
+
+    <span class="sep"></span>
+
+    <button class="tool" data-tip="Crop" data-desc="Trim the page margins" data-key="C"><svg viewBox="0 0 24 24"><path d="M7 2.5V17h14"/><path d="M2.5 7H17v14.5"/></svg><i>Crop</i></button>
+    <button class="tool" data-tip="Rotate" data-desc="Turn this page 90°" data-key="O"><svg viewBox="0 0 24 24"><path d="M20.5 11.5a8.5 8.5 0 1 0-2.6 6.1"/><path d="M20.5 5v6.5H14"/></svg><i>Rotate</i></button>
+    <button class="tool" data-tip="Delete" data-desc="Remove this page" data-key="Del"><svg viewBox="0 0 24 24"><path d="M3.5 6.5h17M9.5 6.5V4a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v2.5"/><path d="M6 6.5l.9 13a1.5 1.5 0 0 0 1.5 1.4h7.2a1.5 1.5 0 0 0 1.5-1.4l.9-13"/><path d="M10.3 10.5v6.5M13.7 10.5v6.5"/></svg><i>Delete</i></button>
+
+    <span class="spacer"></span>
+
+    <button class="tool" data-tip="Search" data-desc="Find text in the document" data-key="Ctrl F"><svg viewBox="0 0 24 24"><circle cx="10.6" cy="10.6" r="6.6"/><path d="M20.5 20.5l-5.2-5.2"/></svg><i>Search</i></button>
+    <button class="tool" data-tip="Comments" data-desc="Notes for reviewers" data-key="N"><svg viewBox="0 0 24 24"><path d="M4.5 4.5h15A1.5 1.5 0 0 1 21 6v8.5a1.5 1.5 0 0 1-1.5 1.5h-7.2L8 20.5V16H4.5A1.5 1.5 0 0 1 3 14.5V6a1.5 1.5 0 0 1 1.5-1.5z"/></svg><i>Comments</i></button>
+
+  </div>
+
+  <div class="body">
+
+    <aside class="rail">
+      <div class="rail-head"><span class="lbl">Pages</span><span class="lbl" id="thumbCount">0</span></div>
+      <div class="thumbs" id="thumbs"></div>
+    </aside>
+
+    <main class="stage" id="stage">
+      <div class="pages" id="pages"></div>
+    </main>
+
+    <aside class="panel">
+      <div class="sec" id="inspector">
+        <span class="lbl" id="inspTitle">Select</span>
+        <p class="hint" id="inspHint" style="margin-top:8px">Click a mark to move or resize it.</p>
+
+        <div class="ins ins--col" id="insColor" hidden>
+          <span>Colour</span>
+          <!-- Ten pairs, not five: each button carries an ink colour and a
+               marker colour, and the panel swaps them per tool. The custom well
+               is a native picker — a hand-rolled one is a project, this is one
+               input. -->
+          <div class="swatches swatches--grid" id="swatches">
+            <button class="sw-c" data-ink="#111111" data-mark="#fde047" data-color="#111111" aria-pressed="true"></button>
+            <button class="sw-c" data-ink="#6b7280" data-mark="#e5e7eb" data-color="#6b7280"></button>
+            <button class="sw-c" data-ink="#2563eb" data-mark="#7dd3fc" data-color="#2563eb"></button>
+            <button class="sw-c" data-ink="#0891b2" data-mark="#a5f3fc" data-color="#0891b2"></button>
+            <button class="sw-c" data-ink="#dc2626" data-mark="#fca5a5" data-color="#dc2626"></button>
+            <button class="sw-c" data-ink="#ea580c" data-mark="#fed7aa" data-color="#ea580c"></button>
+            <button class="sw-c" data-ink="#16a34a" data-mark="#86efac" data-color="#16a34a"></button>
+            <button class="sw-c" data-ink="#7c3aed" data-mark="#ddd6fe" data-color="#7c3aed"></button>
+            <button class="sw-c" data-ink="#db2777" data-mark="#fbcfe8" data-color="#db2777"></button>
+            <label class="sw-c sw-c--custom" title="Custom colour">
+              <input type="color" id="swCustom" value="#333333" aria-label="Custom colour">
+            </label>
+          </div>
+        </div>
+
+        <div class="ins" id="insWidth" hidden>
+          <span>Thickness</span>
+          <input class="range" id="rangeWidth" type="range" min="1" max="10" value="2">
+          <b class="ins-val" id="widthVal">2</b>
+        </div>
+
+        <div class="ins" id="insSize" hidden>
+          <span>Text size</span>
+          <!-- A number you can read and type. The slider it replaces never
+               said what it was set to. -->
+          <!-- A tenth of a point, because that is the resolution the page's own
+               type is set at: a run reported as 9.8pt is invalid against a whole
+               number step, and an invalid number input is one the browser will
+               not hand back. -->
+          <input class="num" id="sizeBox" type="number" min="1" max="1000" step="0.1" value="14" list="sizePresets">
+          <datalist id="sizePresets">
+            <option value="4"></option><option value="6"></option><option value="8"></option>
+            <option value="9"></option><option value="10"></option><option value="11"></option>
+            <option value="12"></option><option value="14"></option><option value="16"></option>
+            <option value="18"></option><option value="20"></option><option value="24"></option>
+            <option value="28"></option><option value="32"></option><option value="36"></option>
+            <option value="48"></option><option value="64"></option><option value="72"></option>
+            <option value="96"></option><option value="144"></option><option value="192"></option>
+          </datalist>
+        </div>
+
+        <div class="ins" id="insTrack" hidden>
+          <span>Letter spacing</span>
+          <!-- In points, the same unit as the type size, and signed: tightening
+               a heading is as ordinary a thing to want as opening one out. -->
+          <input class="num" id="trackBox" type="number" min="-20" max="50" step="0.1" value="0">
+        </div>
+
+        <div class="ins" id="insStyle" hidden>
+          <span>Style</span>
+          <span class="styles">
+            <button class="style-b" id="btnBold" aria-pressed="false" title="Bold"><b>B</b></button>
+            <button class="style-b" id="btnItalic" aria-pressed="false" title="Italic"><i>I</i></button>
+          </span>
+        </div>
+
+        <div class="ins ins--col" id="insFont" hidden>
+          <span>Font</span>
+          <select id="fontPick" class="pick">
+            <optgroup label="Sans serif">
+              <option value="helvetica" selected>Helvetica / Arial</option>
+              <option value="helvetica-bold">Helvetica Bold</option>
+              <option value="helvetica-oblique">Helvetica Italic</option>
+              <option value="helvetica-boldoblique">Helvetica Bold Italic</option>
+            </optgroup>
+            <optgroup label="Serif">
+              <option value="times">Times New Roman</option>
+              <option value="times-bold">Times Bold</option>
+              <option value="times-italic">Times Italic</option>
+              <option value="times-bolditalic">Times Bold Italic</option>
+            </optgroup>
+            <optgroup label="Monospace">
+              <option value="courier">Courier</option>
+              <option value="courier-bold">Courier Bold</option>
+              <option value="courier-oblique">Courier Italic</option>
+              <option value="courier-boldoblique">Courier Bold Italic</option>
+            </optgroup>
+            <optgroup label="Symbols">
+              <option value="symbol">Symbol</option>
+              <option value="zapf">Zapf Dingbats</option>
+            </optgroup>
+          </select>
+          <p class="hint" style="margin-top:2px">These twelve are built into every PDF reader, so the file needs no font attached and opens identically everywhere.</p>
+        </div>
+
+        <div class="ins ins--col" id="insShape" hidden>
+          <span>Shape</span>
+          <div class="sw sw--wide" id="shapePick">
+            <button data-shape="rect" aria-pressed="true">Rect</button>
+            <button data-shape="ellipse">Ellipse</button>
+            <button data-shape="line">Line</button>
+            <button data-shape="arrow">Arrow</button>
+          </div>
+          <label class="chk"><input type="checkbox" id="shapeFill">Fill the shape</label>
+        </div>
+
+        <div class="ins ins--col" id="insStamp" hidden>
+          <span>Stamp</span>
+          <div class="sw sw--wide" id="stampPick">
+            <button data-stamp="APPROVED" aria-pressed="true">Approved</button>
+            <button data-stamp="DRAFT">Draft</button>
+            <button data-stamp="CONFIDENTIAL">Confidential</button>
+            <button data-stamp="PAID">Paid</button>
+          </div>
+        </div>
+
+        <div class="ins ins--col" id="insField" hidden>
+          <span>Field</span>
+          <div class="sw sw--wide" id="fieldPick">
+            <button data-field="text" aria-pressed="true">Text box</button>
+            <button data-field="check">Checkbox</button>
+          </div>
+        </div>
+
+        <div class="ins ins--col" id="insSign" hidden>
+          <span>Signature</span>
+          <button class="btn" id="sigEdit" style="width:100%">Change signature…</button>
+          <div class="ins" style="margin-top:4px">
+            <span>Size</span>
+            <input class="range" id="sigSize" type="range" min="60" max="320" value="170">
+          </div>
+          <label class="chk"><input type="checkbox" id="sigKeep">Keep placing after each one</label>
+        </div>
+
+        <div class="ins ins--col" id="insCrop" hidden>
+          <span>Crop</span>
+          <p class="hint" style="margin:0">Drag out the area you want to keep, then apply.</p>
+          <div class="ins-actions">
+            <button class="btn" id="cropCancel">Cancel</button>
+            <button class="btn btn--primary" id="cropApply">Apply crop</button>
+          </div>
+        </div>
+
+        <button class="btn btn--danger" id="deleteSel" hidden style="width:100%;margin-top:14px">
+          Delete this mark
+        </button>
+      </div>
+
+      <div class="sec">
+        <span class="lbl">Page</span>
+        <div class="row" style="margin-top:12px"><span>Size</span><span class="val" id="metaPageSize">&mdash;</span></div>
+        <div class="row"><span>Rotation</span><span class="val" id="metaRotation">&mdash;</span></div>
+        <div class="acts">
+          <button id="actRotate"><svg viewBox="0 0 24 24"><path d="M20.5 11.5a8.5 8.5 0 1 0-2.6 6.1"/><path d="M20.5 5v6.5H14"/></svg>Rotate</button>
+          <button id="actInsert"><svg viewBox="0 0 24 24"><path d="M12 5.5v13M5.5 12h13"/></svg>Insert</button>
+          <button id="actMoveUp"><svg viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg>Move up</button>
+          <button class="danger" id="actDelete"><svg viewBox="0 0 24 24"><path d="M3.5 6.5h17M6 6.5l.9 13a1.5 1.5 0 0 0 1.5 1.4h7.2a1.5 1.5 0 0 0 1.5-1.4l.9-13M9.5 6.5V4h5v2.5"/></svg>Delete</button>
+        </div>
+      </div>
+
+      <div class="sec">
+        <span class="lbl">Document</span>
+        <div class="row" style="margin-top:12px"><span>Pages</span><span class="val" id="metaPages">&mdash;</span></div>
+        <div class="row"><span>Marks</span><span class="val" id="metaMarks">0</span></div>
+        <div class="row"><span>Fields filled</span><span class="val" id="metaFields">0</span></div>
+        <div class="row"><span>Size on disk</span><span class="val" id="metaSize">&mdash;</span></div>
+        <p class="hint">Marks are written into the file when you export. Nothing is uploaded at any point.</p>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="site-foot site-foot--slim">
+  <div class="sf-in">
+    <div class="sf-brand"><div><b>Quire · free PDF editor</b></div></div>
+    <span class="sf-mini">
+      <a href="./privacy.html">Privacy Policy</a>
+      <a href="./terms.html">Terms of Use</a>
+    </span>
+    <span class="sf-spacer"></span>
+    <a class="sf-author" href="https://uz-or.com/" target="_blank" rel="noopener">
+      <span class="sf-ico">
+        <svg viewBox="0 0 64 64"><rect width="64" height="64" fill="#0a0a0a"/><polygon fill="#fff" points="12,52 12,12 24,12 40,36 40,12 52,12 52,52 40,52 24,28 24,52"/></svg>
+      </span>
+      <span class="sf-txt">
+        <b>Mykhailo Nahreba</b>
+        <em>Author · see the portfolio</em>
+      </span>
+      <svg class="sf-arrow" viewBox="0 0 24 24"><path d="M7 17 17 7M8.5 7H17v8.5"/></svg>
+    </a>
+  </div>
+</footer>
+</div>
+
+<div class="dock">
+  <button id="pagePrev" aria-label="Previous page">&#8249;</button>
+  <span class="pg"><b id="pageNum">1</b> / <span id="pageTotal">1</span></span>
+  <button id="pageNext" aria-label="Next page">&#8250;</button>
+  <span class="d"></span>
+  <button id="zoomOut" aria-label="Zoom out">&minus;</button>
+  <button id="zoomLevel" title="Fit to width">100%</button>
+  <button id="zoomIn" aria-label="Zoom in">+</button>
+</div>
+
+<input type="file" id="fileInput" accept="application/pdf,.pdf" hidden>
+
+<!-- The markup bar. Appears where the selection is, the way it does in every
+     reader people already use — a toolbar at the top of the window would make
+     you look away from the words you just chose. -->
+<div class="mk" id="mk" hidden role="toolbar" aria-label="Mark the selected text">
+  <button class="mk-b" data-mark="highlight" title="Highlight" aria-label="Highlight">
+    <svg viewBox="0 0 24 24"><path d="M4 19.5h16" class="mk-rule"/><path d="M12.4 14.6 8.6 10.8l6.6-6.6a1.9 1.9 0 0 1 2.7 0l1.1 1.1a1.9 1.9 0 0 1 0 2.7z"/><path d="M8.6 10.8 6 13.4l.9 3.3 3.3.9 2.2-3"/></svg>
+  </button>
+  <button class="mk-b" data-mark="strike" title="Strikethrough" aria-label="Strikethrough">
+    <svg viewBox="0 0 24 24"><path d="M4 12h16"/><path d="M7.5 7.5A4 4 0 0 1 11.5 5h1a4 4 0 0 1 4 3"/><path d="M16.5 16a4 4 0 0 1-4 3h-1a4 4 0 0 1-4-3"/></svg>
+  </button>
+  <button class="mk-b" data-mark="underline" title="Underline" aria-label="Underline">
+    <svg viewBox="0 0 24 24"><path d="M6.5 4.5v6a5.5 5.5 0 0 0 11 0v-6"/><path d="M4.5 19.5h15"/></svg>
+  </button>
+  <button class="mk-b" data-mark="squiggle" title="Squiggle" aria-label="Squiggle">
+    <svg viewBox="0 0 24 24"><path d="M6.5 4.5v6a5.5 5.5 0 0 0 11 0v-6"/><path d="M4.5 18.8q1.9-2 3.75 0t3.75 0 3.75 0 3.75 0"/></svg>
+  </button>
+  <span class="mk-sep"></span>
+  <button class="mk-b mk-b--copy" data-mark="copy" title="Copy text" aria-label="Copy text">
+    <svg viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 5.5h-9a2 2 0 0 0-2 2v9"/></svg>
+  </button>
+</div>
+
+<!-- The find bar. Docked rather than modal: you search a document while
+     looking at it, and a dialog over the page would hide the thing you are
+     searching. -->
+<div class="find" id="find" hidden>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.6" cy="10.6" r="6.6"/><path d="M20.5 20.5l-5.2-5.2"/></svg>
+  <input id="findQ" type="search" placeholder="Find in document" aria-label="Find in document" autocomplete="off">
+  <span class="find-n" id="findN"></span>
+  <button class="find-b" id="findPrev" title="Previous (Shift+Enter)" aria-label="Previous match">
+    <svg viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>
+  </button>
+  <button class="find-b" id="findNext" title="Next (Enter)" aria-label="Next match">
+    <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+  </button>
+  <button class="find-b" id="findClose" title="Close (Escape)" aria-label="Close search">
+    <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+</div>
+
+<div class="busy" id="busy"><span>Working…</span></div>
+<div class="toast" id="toast"></div>
+
+<!-- ── start from ─────────────────────────────────────── -->
+<div class="ovl" id="ovlStart">
+  <div class="modal modal--start">
+    <div class="m-head">
+      <h3>Start a document <span class="sub">every preview below is the real file</span></h3>
+      <button class="close" data-close>&times;</button>
+    </div>
+    <div class="tpl-grid" id="tplGrid"></div>
+    <div class="m-foot">
+      <span class="l">Or open something you already have</span>
+      <button class="btn" id="openFromStart">Open a PDF…</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── signature ──────────────────────────────────────── -->
+<div class="ovl" id="ovlSign">
+  <div class="modal modal--sign">
+    <div class="m-head">
+      <h3>Your signature <span class="sub">made once, then placed anywhere</span></h3>
+      <button class="close" data-close>&times;</button>
+    </div>
+
+    <div class="sig-body">
+      <div class="sw sw--wide" id="sigModes">
+        <button data-sigmode="draw" aria-pressed="true">Draw</button>
+        <button data-sigmode="type">Type</button>
+        <button data-sigmode="upload">Upload</button>
+      </div>
+
+      <div class="sig-row" id="sigTypeRow" hidden>
+        <input id="sigTyped" type="text" placeholder="Type your name" autocomplete="off" spellcheck="false">
+      </div>
+
+      <div class="ins" style="margin-top:14px">
+        <span>Ink</span>
+        <div class="swatches" id="sigInk">
+          <button class="sw-c" data-ink="#111111" style="background:#111111" aria-pressed="true"></button>
+          <button class="sw-c" data-ink="#1c3f77" style="background:#1c3f77"></button>
+          <button class="sw-c" data-ink="#7a1420" style="background:#7a1420"></button>
+        </div>
+      </div>
+
+      <div class="sig-row" id="sigUploadRow" hidden>
+        <button class="btn" id="sigUpload">Choose a photo of your signature…</button>
+      </div>
+
+      <div class="sig-pad">
+        <canvas></canvas>
+        <em class="sig-hint">Draw here with a mouse, a trackpad or your finger</em>
+      </div>
+    </div>
+
+    <div class="m-foot">
+      <span class="l">Stored in this browser only &middot; never uploaded</span>
+      <div style="display:flex;gap:8px">
+        <button class="btn" id="sigClear">Clear</button>
+        <button class="btn btn--primary" id="sigPlace">Use this signature</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── export ─────────────────────────────────────────── -->
+<!-- Leaving a rewritten paragraph. Its own dialog rather than the document
+     one, because the document dialog offers to export first and talks about
+     the file — neither of which applies to one paragraph. -->
+<div class="ovl" id="ovlBlockCf">
+  <div class="modal modal--confirm">
+    <div class="cf">
+      <span class="cf-ico">
+        <svg viewBox="0 0 24 24"><path d="M12 8.5v5M12 17h.01"/><path d="M10.3 3.9 2.6 17.2a2 2 0 0 0 1.7 3h15.4a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+      </span>
+      <h3>Discard this paragraph?</h3>
+      <p>You have rewritten this paragraph and not left it yet. Discarding puts the original words back.</p>
+    </div>
+    <div class="m-foot">
+      <span class="l">Esc discards · Tab keeps and moves on</span>
+      <span class="m-acts">
+        <button class="btn" id="bkKeep">Keep editing</button>
+        <button class="btn btn--danger" id="bkDiscard">Discard</button>
+      </span>
+    </div>
+  </div>
+</div>
+
+<div class="ovl" id="ovlExport">
+  <div class="modal modal--export">
+    <div class="m-head">
+      <h3>Export</h3>
+      <button class="close" data-close>&times;</button>
+    </div>
+    <div class="ex-body">
+      <div class="ex-row"><span>File</span><b id="exName">—</b></div>
+      <div class="ex-row"><span>Pages</span><b id="exPages">—</b></div>
+      <div class="ex-row"><span>Size</span><b id="exSize">—</b></div>
+      <div class="ex-row"><span>Marks to write in</span><b id="exMarks">0</b></div>
+      <!-- Three choices, all of them visible. A dropdown for three options
+           hides two of them behind a click and hands the look of the dialog to
+           the operating system, which is why this one stood out. -->
+      <div class="ex-row">
+        <span>Format</span>
+        <div class="seg" id="exFormat" data-value="pdf" role="radiogroup" aria-label="Export format">
+          <button type="button" class="seg-b" role="radio" aria-checked="true" data-v="pdf"
+                  data-note="Keeps the text selectable, the fields fillable and the links live.">PDF</button>
+          <button type="button" class="seg-b" role="radio" aria-checked="false" data-v="png"
+                  data-note="One picture per page, lossless. Nothing stays selectable.">PNG</button>
+          <button type="button" class="seg-b" role="radio" aria-checked="false" data-v="jpg"
+                  data-note="One picture per page, smaller and lossy. Nothing stays selectable.">JPG</button>
+        </div>
+      </div>
+      <p class="ex-note" id="exFormatNote">Keeps the text selectable, the fields fillable and the links live.</p>
+      <label class="ex-row ex-row--pick" id="exMetaRow">
+        <span>Metadata</span>
+        <span class="ex-toggle">
+          <input type="checkbox" id="exStrip" checked>
+          <b>Strip author, title and dates</b>
+        </span>
+      </label>
+      <p class="ex-warn" id="exFlat" hidden>
+        This form uses a structure Quire cannot rewrite, so the export is built
+        by rendering each page and drawing your answers onto it. The result
+        prints and reads exactly as filled in — but the boxes stop being
+        fillable, so keep this copy for sending rather than for editing later.
+      </p>
+      <p class="ex-warn" id="exRedact" hidden>
+        This document has redactions. Those pages will be replaced by an image of
+        themselves so the text underneath is genuinely removed — they will no
+        longer be selectable or searchable.
+      </p>
+    </div>
+    <div class="m-foot">
+      <span class="l">Written in this browser · never uploaded</span>
+      <div style="display:flex;gap:8px">
+        <button class="btn" data-close>Cancel</button>
+        <button class="btn btn--primary" id="downloadBtn">
+          <svg viewBox="0 0 24 24"><path d="M12 3.5v11M8 10.5l4 4 4-4"/><path d="M4.5 16.5v2.5a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5v-2.5"/></svg>
+          Download
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── discard confirmation ───────────────────────────── -->
+<div class="ovl" id="ovlNew">
+  <div class="modal modal--confirm">
+    <div class="cf">
+      <span class="cf-ico">
+        <svg viewBox="0 0 24 24"><path d="M12 8.5v5M12 17h.01"/><path d="M10.3 3.9 2.6 17.2a2 2 0 0 0 1.7 3h15.4a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+      </span>
+      <h3>Leave without saving?</h3>
+      <p>
+        You have unsaved changes in <b id="cfName">this document</b>. Starting a new
+        one discards them — nothing is stored on a server, so there is no copy to
+        come back to.
+      </p>
+    </div>
+    <div class="m-foot">
+      <button class="btn" data-close>Stay here</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn--primary" id="cfExport">Export first</button>
+        <button class="btn btn--danger" id="cfDiscard">Discard and start new</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tip" id="tip"></div>
+
+<script src="./assets/site.js" type="module"></script>
+<script type="module" src="./assets/editor.js"></script>
+<script>
+/* Toolbar tooltips. One element on <body>, positioned from the trigger's rect —
+   it has to live outside .bar because the toolbar scrolls and would clip it.
+   The arrow is offset separately so the bubble can be clamped to the viewport
+   while still pointing at the button. */
+const tip = document.getElementById('tip');
+let tipTimer;
+function showTip(el){
+  const {tip: name, desc, key} = el.dataset;
+  tip.innerHTML = '<b>' + name + '</b>' + (desc ? '<em>' + desc + '</em>' : '') + (key ? '<kbd>' + key + '</kbd>' : '');
+  tip.classList.add('on');
+  const r = el.getBoundingClientRect(), t = tip.getBoundingClientRect();
+  const centre = r.left + r.width / 2;
+  const left = Math.min(Math.max(10, centre - t.width / 2), innerWidth - t.width - 10);
+  tip.style.left = left + 'px';
+  tip.style.top = (r.bottom + 9) + 'px';
+  tip.style.setProperty('--nx', (centre - left) + 'px');
+}
+function hideTip(){ clearTimeout(tipTimer); tip.classList.remove('on'); }
+document.querySelectorAll('[data-tip]').forEach(el => {
+  el.addEventListener('mouseenter', () => { clearTimeout(tipTimer); tipTimer = setTimeout(() => showTip(el), 260); });
+  el.addEventListener('mouseleave', hideTip);
+  el.addEventListener('mousedown', hideTip);
+});
+</script>
+</body>
+</html>

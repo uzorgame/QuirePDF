@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Free PDF Editor — Edit, Sign and Fill PDF in Your Browser | Quire</title>
+<meta name="description" content="Free online PDF editor. Edit text, sign, highlight, redact, merge, split and compress PDF files directly in your browser. No upload, no account, no watermark.">
+<link rel="canonical" href="https://uz-or.com/quirePDF/">
+<meta name="theme-color" content="#2563eb">
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://uz-or.com/quirePDF/">
+<meta property="og:site_name" content="Quire">
+<meta property="og:title" content="Free PDF Editor — edit, sign and fill PDF in your browser">
+<meta property="og:description" content="Edit text, sign, highlight, redact, merge and compress PDF files entirely on your own machine. No upload, no account, no watermark.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Free PDF Editor — edit, sign and fill PDF in your browser">
+<meta name="twitter:description" content="Edit, sign and fill PDF files entirely in the browser. No upload, no account, no watermark.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./assets/tokens.css">
+<link rel="stylesheet" href="./assets/site.css">
+<link rel="stylesheet" href="./assets/footer.css">
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"SoftwareApplication",
+  "name":"Quire PDF Editor",
+  "applicationCategory":"BusinessApplication",
+  "operatingSystem":"Any — runs in a web browser",
+  "url":"https://uz-or.com/quirePDF/",
+  "description":"Free online PDF editor. Edit text, sign, highlight, redact, merge, split and compress PDF files directly in the browser, with no upload and no account.",
+  "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},
+  "featureList":["Edit PDF text","Sign PDF","Fill PDF forms","Highlight and annotate PDF","Redact PDF","Merge PDF","Split PDF","Compress PDF","Add images to PDF"],
+  "author":{"@type":"Person","name":"Mykhailo Nahreba","url":"https://uz-or.com/"}
+}
+</script>
+<script type="application/ld+json" id="faq-schema">
+{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "Is Quire really free?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Yes. Every tool on every page, with no trial period, no paid tier holding features back, no watermark on the export and no cap on how many documents you open. It stays free because there is no server doing the work and therefore nothing to pay for — your own browser does all of it."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Do I need to create an account?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "No. There is nothing to sign up for and no email to hand over. Open the page and start working."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Are my files uploaded to a server?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "No. The document is opened, edited and saved by code running inside your browser tab, so it never leaves your device. That is also why there is no upload bar and no queue to wait in — there is nothing to send."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Is there a file size or page limit?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "No limit that we set. The practical ceiling is your device's memory rather than a rule, so a large scanned document will feel slower on a phone than on a laptop, but nothing will refuse to open at 51 pages the way a free tier usually does."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Can I edit text that is already in the PDF?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Yes. Edit text changes words already present in the document and reuses the fonts embedded in the file, so the result matches the paragraph around it. Add text drops a new text box anywhere on the page, which is what you want on a flat scan that has no real text in it."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "How do I sign a PDF?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Open the Sign tool, then draw your signature with a mouse, trackpad or finger, type it in a handwriting face, or upload a photo of one you already have. Place it, resize it, export. The signature is kept in your browser only, so the next document takes a single click."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Does redaction actually remove the text?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Yes, and this is the part most tools get wrong. Redaction deletes the underlying characters from the file rather than drawing a black rectangle on top of them. Text removed this way cannot be selected, copied or searched in the exported PDF — which is the whole difference between redacting something and merely hiding it."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Will a converted file look exactly like the original?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Usually close, never guaranteed, and anyone promising otherwise is overselling. Converting between formats is lossy by nature: a PDF describes a fixed page while a Word file describes flowing text, and the two do not map onto each other perfectly. Plain layouts, headings and images survive well; complex multi-column pages and unusual fonts less so. Check the result before you rely on it."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Which browsers and devices does it work on?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Any current browser on Windows, macOS, Linux, Android or iOS — Chrome, Edge, Firefox and Safari are all fine. It works on a phone, though the editor has a lot of tools and is more comfortable on a larger screen."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Can I use it without an internet connection?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Once the page has loaded, yes. You can disconnect and keep editing, because nothing here needs the network to do its job. Only the first load needs a connection."
+   }
+  }
+ ]
+}
+</script>
+<style>
+html{scroll-behavior:smooth}
+/* ── hero ──────────────────────────────────────────── */
+.hero{padding:76px 0 56px;text-align:center}
+h1{font-size:clamp(34px,5.2vw,54px);line-height:1.08;font-weight:600;
+   letter-spacing:-.035em;max-width:15ch;margin:0 auto}
+h1 em{font-style:normal;color:var(--acc)}
+.lede{margin:20px auto 0;max-width:60ch;font-size:16.5px;color:var(--ink-2)}
+
+/* ── the two entry cards ───────────────────────────── */
+.entry{display:grid;grid-template-columns:1.35fr 1fr;gap:16px;margin-top:44px;text-align:left}
+
+.dropzone{position:relative;border-radius:var(--r-lg);background:var(--s-1);
+      border:1.5px dashed var(--line-2);padding:44px 32px;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      text-align:center;gap:6px;cursor:pointer;
+      transition:background .18s var(--ease),border-color .18s var(--ease)}
+.dropzone:hover,.dropzone.over{background:var(--acc-soft);border-color:var(--acc)}
+.dropzone input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.dz-ico{width:52px;height:52px;border-radius:var(--r);background:#fff;
+          box-shadow:var(--ring),0 4px 14px rgba(0,0,0,.07);
+          display:grid;place-items:center;margin-bottom:12px;
+          transition:transform .2s var(--ease)}
+.dropzone:hover .dz-ico{transform:translateY(-3px)}
+.dz-ico svg{width:24px;height:24px;stroke:var(--acc);fill:none;stroke-width:1.6;
+              stroke-linecap:round;stroke-linejoin:round}
+.dropzone b{font-size:17px;font-weight:600;letter-spacing:-.02em}
+.dropzone span{color:var(--ink-2);font-size:14px}
+.dropzone .fine{color:var(--ink-3);font-size:12.5px;margin-top:10px}
+
+.side{display:flex;flex-direction:column;gap:16px}
+.card{border-radius:var(--r-lg);box-shadow:var(--ring);padding:22px;
+      display:flex;flex-direction:column;gap:7px;flex:1;justify-content:center;
+      transition:box-shadow .18s var(--ease),transform .18s var(--ease)}
+.card:hover{box-shadow:var(--ring),0 8px 26px rgba(0,0,0,.08);transform:translateY(-2px)}
+.card-ico{width:34px;height:34px;border-radius:var(--r-sm);background:var(--s-1);
+          display:grid;place-items:center;margin-bottom:6px}
+.card-ico svg{width:17px;height:17px;stroke:var(--ink);fill:none;stroke-width:1.6;
+              stroke-linecap:round;stroke-linejoin:round}
+.card b{font-size:14.5px;font-weight:600;letter-spacing:-.02em}
+.card span{font-size:13.5px;color:var(--ink-2);line-height:1.5}
+
+/* ── trust strip ───────────────────────────────────── */
+.trust{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 28px;
+       margin-top:34px;font-size:13px;color:var(--ink-2)}
+.trust div{display:flex;align-items:center;gap:7px}
+.trust svg{width:15px;height:15px;stroke:var(--acc);fill:none;stroke-width:2;
+           stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:14px}
+.feat{padding:20px;border-radius:var(--r-lg);box-shadow:var(--ring);
+      transition:box-shadow .18s var(--ease)}
+.feat:hover{box-shadow:var(--ring),0 6px 20px rgba(0,0,0,.07)}
+.feat-ico{width:32px;height:32px;border-radius:var(--r-sm);background:var(--acc-soft);
+          display:grid;place-items:center;margin-bottom:13px}
+.feat-ico svg{width:17px;height:17px;stroke:var(--acc);fill:none;stroke-width:1.6;
+              stroke-linecap:round;stroke-linejoin:round}
+.feat b{display:block;font-size:14.5px;font-weight:600;letter-spacing:-.02em;margin-bottom:5px}
+.feat p{font-size:13.5px;color:var(--ink-2);line-height:1.55}
+
+/* converter directory */
+.conv-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 40px}
+.conv-col h3{font-size:14px;font-weight:600;letter-spacing:-.02em;color:var(--ink-3);
+             margin-bottom:12px}
+.conv-row{display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:var(--r);
+          box-shadow:var(--ring);margin-bottom:8px;font-size:14.5px;font-weight:500;
+          transition:box-shadow .16s var(--ease),transform .16s var(--ease)}
+.conv-row:hover{box-shadow:var(--ring),0 6px 20px rgba(0,0,0,.08);transform:translateY(-2px)}
+.conv-row svg{width:13px;height:13px;stroke:var(--ink-3);fill:none;stroke-width:2;
+              stroke-linecap:round;stroke-linejoin:round;margin-left:auto;
+              transition:transform .18s var(--ease),stroke .16s var(--ease)}
+.conv-row:hover svg{transform:translateX(3px);stroke:var(--acc)}
+
+
+/* faq */
+.faq{max-width:820px}
+.faq-item{border-bottom:1px solid var(--line)}
+.faq-item summary{list-style:none;cursor:pointer;padding:20px 44px 20px 0;position:relative;
+                  font-size:16px;font-weight:500;letter-spacing:-.02em;
+                  transition:color .13s var(--ease)}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary:hover{color:var(--acc)}
+.faq-item summary::after{content:'';position:absolute;right:8px;top:26px;width:10px;height:10px;
+  border-right:1.7px solid var(--ink-3);border-bottom:1.7px solid var(--ink-3);
+  transform:rotate(45deg);transition:transform .22s var(--ease)}
+.faq-item[open] summary::after{transform:rotate(-135deg)}
+.faq-item summary::marker{content:''}
+.faq-item p{padding:0 44px 22px 0;color:var(--ink-2);font-size:14.5px;max-width:74ch}
+
+/* closing call to action */
+.cta{text-align:center}
+.cta h2{font-size:clamp(26px,3.3vw,33px);line-height:1.15;font-weight:600;
+        letter-spacing:-.03em;max-width:18ch;margin:0 auto}
+.cta p{margin:14px auto 26px;max-width:52ch;color:var(--ink-2)}
+
+@media (max-width:860px){
+  .hero{padding:52px 0 40px}
+  .entry{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="head">
+  <div class="wrap">
+    <a class="logo" href="./" aria-label="Quire home">
+      <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
+        <path d="M3 4a3 3 0 0 1 3-3h13.5L29 10.5V28a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V4z" fill="#2563EB"/>
+        <path d="M19.5 1 29 10.5h-6.5a3 3 0 0 1-3-3V1z" fill="#1D4ED8"/>
+        <path d="M16 15.5v9M11.5 20h9" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/>
+      </svg>
+      <b>Quire</b>
+    </a>
+
+    <nav class="nav">
+      <div class="drop" data-drop>
+        <button class="drop-btn" aria-expanded="false" aria-haspopup="true">
+          PDF Converter
+          <svg viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></svg>
+        </button>
+        <div class="drop-panel">
+        <div class="drop-col">
+          <h4>Convert from PDF</h4>
+          <a href="./convert/pdf-to-word.html">PDF to Word</a>
+          <a href="./convert/pdf-to-excel.html">PDF to Excel</a>
+          <a href="./convert/pdf-to-pptx.html">PDF to PPTX</a>
+          <a href="./convert/pdf-to-jpg.html">PDF to JPG</a>
+          <a href="./convert/pdf-to-png.html">PDF to PNG</a>
+          <a href="./convert/pdf-to-dxf.html">PDF to DXF</a>
+        </div>
+        <div class="drop-col">
+          <h4>Convert to PDF</h4>
+          <a href="./convert/image-to-pdf.html">Image to PDF</a>
+          <a href="./convert/word-to-pdf.html">Word to PDF</a>
+          <a href="./convert/jpg-to-pdf.html">JPG to PDF</a>
+          <a href="./convert/png-to-pdf.html">PNG to PDF</a>
+          <a href="./convert/excel-to-pdf.html">Excel to PDF</a>
+          <a href="./convert/pptx-to-pdf.html">PPTX to PDF</a>
+          <a class="drop-all" href="./converter.html">View all converters</a>
+        </div>
+        </div>
+      </div>
+
+      <div class="drop" data-drop>
+        <button class="drop-btn" aria-expanded="false" aria-haspopup="true">
+          Forms
+          <svg viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></svg>
+        </button>
+        <div class="drop-panel drop-panel--one">
+          <div class="drop-col">
+            <a href="./forms/w-9.html">W-9</a>
+            <a href="./forms/ds-11.html">DS-11</a>
+            <a href="./forms/1099-misc.html">1099-MISC</a>
+            <a class="drop-all" href="./forms.html">View all forms</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- A nav item named after a thing should open that thing. "PDF Editor"
+           used to scroll the home page to a list of features, and "Privacy" to
+           a paragraph about privacy while the actual policy sat unreachable in
+           the footer — both are now the page they name. Only the two that
+           genuinely are sections of the home page still jump to anchors. -->
+      <a href="./editor.html">PDF Editor</a>
+      <a href="./#how">How it works</a>
+      <a href="./#faq">FAQ</a>
+      <a href="./privacy.html">Privacy</a>
+    </nav>
+
+    <div class="head-actions"><a class="btn btn--primary" href="./editor.html">Open the editor</a></div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ── hero ─────────────────────────────────────── -->
+  <div class="wrap hero">
+    <h1>The free <em>PDF editor</em> that runs in your browser</h1>
+    <p class="lede">
+      Edit text, sign, fill forms, highlight, redact, merge and compress PDF files
+      without installing anything. Your document is opened and saved on your own
+      machine — it is never uploaded to a server.
+    </p>
+
+    <div class="entry">
+
+      <label class="dropzone" id="drop">
+        <input type="file" accept="application/pdf,.pdf" id="file" aria-label="Choose a PDF file to edit">
+        <span class="dz-ico">
+          <svg viewBox="0 0 24 24"><path d="M12 16.5v-11M8 9.5l4-4 4 4"/><path d="M4.5 15.5v3A2 2 0 0 0 6.5 20.5h11a2 2 0 0 0 2-2v-3"/></svg>
+        </span>
+        <b>Open a PDF</b>
+        <span>Drop a file here, or click to choose one</span>
+        <span class="fine">Nothing is uploaded — the file is read locally</span>
+      </label>
+
+      <div class="side">
+        <a class="card" href="./editor.html#new=blank">
+          <span class="card-ico"><svg viewBox="0 0 24 24"><path d="M6.5 2.5h7.5L19.5 8v13.5h-13z"/><path d="M14 2.5V8h5.5"/><path d="M12.5 12v6M9.5 15h6"/></svg></span>
+          <b>Create a blank PDF</b>
+          <span>Start from an empty A4 page and build the document from scratch.</span>
+        </a>
+        <a class="card" href="./editor.html#start=1">
+          <span class="card-ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h6M7 13h10M7 17h4"/></svg></span>
+          <b>Choose a template</b>
+          <span>Pick from sixteen ready-made documents — invoice, letter, timesheet and more.</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="trust">
+      <div><svg viewBox="0 0 24 24"><path d="M20 6.5 9.5 17 4 11.5"/></svg>Files never leave your device</div>
+      <div><svg viewBox="0 0 24 24"><path d="M20 6.5 9.5 17 4 11.5"/></svg>No sign up, no email</div>
+      <div><svg viewBox="0 0 24 24"><path d="M20 6.5 9.5 17 4 11.5"/></svg>No watermark on the export</div>
+      <div><svg viewBox="0 0 24 24"><path d="M20 6.5 9.5 17 4 11.5"/></svg>No page or size limit</div>
+    </div>
+  </div>
+
+  <!-- ── features ─────────────────────────────────── -->
+  <section class="q-section" id="features">
+    <div class="wrap">
+      <div class="q-head">
+        <h2>Everything you normally pay for, in one free PDF editor</h2>
+        <p>
+          Most online tools split these across a dozen single-purpose pages and ask
+          you to upload the file to each one. Here they are all in the same editor,
+          working on the same document, on your own machine.
+        </p>
+      </div>
+
+      <div class="grid">
+
+        <article class="feat">
+          <span class="feat-ico"><svg viewBox="0 0 24 24"><path d="M3 7V4.5h10V7M8 4.5v11M6 15.5h4"/><path d="M13.5 20.5l-3 .7.7-3 6.6-6.6a1.7 1.7 0 0 1 2.4 0l.9.9a1.7 1.7 0 0 1 0 2.4z"/></svg></span>
+          <b>Edit PDF text</b>
+          <p>Change words that are already in the document, or drop a new text box anywhere on the page.</p>
+        </article>
+
+        <article class="feat">
+          <span class="feat-ico"><svg viewBox="0 0 24 24"><path d="M3 16.8c3.4 0 2.9-11.3 6.3-11.3 2.6 0 1.6 7.9 4.1 7.9 2 0 2-3.9 4.2-3.9 1.5 0 2 2 3.4 2"/><path d="M3 20.5h18"/></svg></span>
+          <b>Sign a PDF</b>
+          <p>Draw your signature with a mouse or finger, type it, or upload a scan. Reuse it on any document.</p>
+        </article>
+
+        <article class="feat">
+          <span class="feat-ico"><svg viewBox="0 0 24 24"><rect x="3" y="7.5" width="18" height="9" rx="2.2"/><path d="M7 10.5v3M9.5 12h7"/></svg></span>
+          <b>Fill PDF forms</b>
+          <p>Type into existing form fields, or add your own text, checkboxes and date fields to a flat scan.</p>
+        </article>
+
+        <article class="feat">
+          <span class="feat-ico"><svg viewBox="0 0 24 24"><path d="M12.4 14.6 8.6 10.8l6.6-6.6a1.9 1.9 0 0 1 2.7 0l1.1 1.1a1.9 1.9 0 0 1 0 2.7z"/><path d="M8.6 10.8 6 13.4l.9 3.3 3.3.9 2.2-3"/><path d="M3.5 20.5h17"/></svg></span>
+          <b>Highlight and annotate</b>
+          <p>Highlight passages, draw freehand, add arrows and shapes, and leave comments for reviewers.</p>
+        </article>
+
+        <article class="feat">
+          <span class="feat-ico"><svg viewBox="0 0 24 24"><path d="M3.5 5h11"/><rect x="3.5" y="9" width="17" height="6" rx="1.2" fill="currentColor" stroke="none"/><path d="M3.5 19h13"/></svg></span>
+          <b>Redact PDF</b>
+          <p>Black out sensitive text. The characters underneath are deleted, not merely covered up.</p>
+        </article>
+
+        <article class="feat">
+          <span class="feat-ico"><svg viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="7.5" height="15" rx="1.6"/><path d="M14.5 7.5h6M14.5 11h6M14.5 14.5h6M14.5 18h3.5"/></svg></span>
+          <b>Merge, split and reorder</b>
+          <p>Combine several PDFs, pull pages out into a new file, or drag pages into a different order.</p>
+        </article>
+
+
+        <article class="feat">
+          <span class="feat-ico"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="2.2"/><circle cx="8.4" cy="9.7" r="1.7"/><path d="M3.4 16.8l4.8-4.8 3.3 3.3 3.6-3.6 5.6 5.6"/></svg></span>
+          <b>Add images and stamps</b>
+          <p>Place a logo, a photo or a dated Approved stamp, and scale it precisely where you need it.</p>
+        </article>
+
+        <article class="feat">
+          <span class="feat-ico"><svg viewBox="0 0 24 24"><path d="M12 3.5v11M8 10.5l4 4 4-4"/><path d="M4.5 16.5v2.5a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5v-2.5"/></svg></span>
+          <b>Compress and export</b>
+          <p>Check what is about to be written, strip the metadata, and export as PDF, PNG or JPG. Annotations are flattened into the page; form fields stay fillable.</p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── how it works ─────────────────────────────── -->
+  <section class="q-section" id="how">
+    <div class="wrap">
+      <div class="q-head">
+        <h2>How to edit a PDF, in three steps</h2>
+        <p>No account, no upload queue and no waiting for a server to hand the file back.</p>
+      </div>
+      <div class="q-steps">
+        <div class="q-step">
+          <b>Open your file</b>
+          <p>Drag a PDF onto the page or pick one from your disk. It opens instantly, because it never travels anywhere.</p>
+        </div>
+        <div class="q-step">
+          <b>Make your changes</b>
+          <p>Edit text, sign, highlight, redact, reorder pages — every tool works on the document live, with undo behind you.</p>
+        </div>
+        <div class="q-step">
+          <b>Export the result</b>
+          <p>Choose the format, decide whether to keep the metadata, and download straight to your machine.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── privacy ──────────────────────────────────── -->
+  <section class="q-section" id="privacy">
+    <div class="wrap">
+      <div class="q-head">
+        <h2>Your documents stay on your machine</h2>
+        <p>
+          Contracts, invoices, passports, medical records — the files people edit are
+          rarely ones they want sitting on somebody else's server. This editor has no
+          backend at all. The PDF is read, changed and written by code running inside
+          your own browser tab, so there is no upload to trust, no retention policy to
+          read, and nothing to delete afterwards. Close the tab and it is gone.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── converter ────────────────────────────────── -->
+  <section class="q-section" id="converter">
+    <div class="wrap">
+      <div class="q-head">
+        <h2>Convert anything to PDF, and PDF to anything</h2>
+        <p>
+          Ten converters, each on its own page, all running on the same principle
+          as the editor — the file is read and rewritten in your browser rather
+          than uploaded to somebody's queue.
+        </p>
+      </div>
+
+      <div class="conv-grid">
+        <div class="conv-col">
+          <h3>Convert from PDF</h3>
+          <a class="conv-row" href="./convert/pdf-to-word.html"><span class="conv-chip" style="background:#2B579A">DOC</span>PDF to Word<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></a>
+          <a class="conv-row" href="./convert/pdf-to-pptx.html"><span class="conv-chip" style="background:#D24726">PPT</span>PDF to PPTX<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></a>
+          <a class="conv-row" href="./convert/pdf-to-excel.html"><span class="conv-chip" style="background:#217346">XLS</span>PDF to Excel<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></a>
+          <a class="conv-row" href="./convert/pdf-to-jpg.html"><span class="conv-chip" style="background:#7C3AED">JPG</span>PDF to JPG<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></a>
+          <a class="conv-row" href="./convert/pdf-to-png.html"><span class="conv-chip" style="background:#DB2777">PNG</span>PDF to PNG<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></a>
+        </div>
+        <div class="conv-col">
+          <h3>Convert to PDF</h3>
+          <a class="conv-row" href="./convert/word-to-pdf.html"><span class="conv-chip" style="background:#E5252A">PDF</span>Word to PDF<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></a>
+          <a class="conv-row" href="./convert/pptx-to-pdf.html"><span class="conv-chip" style="background:#E5252A">PDF</span>PPTX to PDF<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></a>
+          <a class="conv-row" href="./convert/excel-to-pdf.html"><span class="conv-chip" style="background:#E5252A">PDF</span>Excel to PDF<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></a>
+          <a class="conv-row" href="./convert/jpg-to-pdf.html"><span class="conv-chip" style="background:#E5252A">PDF</span>JPG to PDF<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></a>
+          <a class="conv-row" href="./convert/png-to-pdf.html"><span class="conv-chip" style="background:#E5252A">PDF</span>PNG to PDF<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── faq ──────────────────────────────────────────
+       The FAQPage schema in <head> is regenerated from this markup by
+       tools/build.mjs. Edit the questions here and only here — a schema that
+       says something different from the visible page is worse than no schema,
+       and Google treats the mismatch as a reason to drop the rich result. -->
+  <section class="q-section" id="faq">
+    <div class="wrap">
+      <div class="q-head">
+        <h2>Frequently asked questions</h2>
+        <p>The things people ask before trusting a document editor they have never used.</p>
+      </div>
+
+      <div class="faq">
+        <details class="faq-item" open>
+          <summary>Is Quire really free?</summary>
+          <p>Yes. Every tool on every page, with no trial period, no paid tier holding features back, no watermark on the export and no cap on how many documents you open. It stays free because there is no server doing the work and therefore nothing to pay for — your own browser does all of it.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary>Do I need to create an account?</summary>
+          <p>No. There is nothing to sign up for and no email to hand over. Open the page and start working.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary>Are my files uploaded to a server?</summary>
+          <p>No. The document is opened, edited and saved by code running inside your browser tab, so it never leaves your device. That is also why there is no upload bar and no queue to wait in — there is nothing to send.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary>Is there a file size or page limit?</summary>
+          <p>No limit that we set. The practical ceiling is your device's memory rather than a rule, so a large scanned document will feel slower on a phone than on a laptop, but nothing will refuse to open at 51 pages the way a free tier usually does.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary>Can I edit text that is already in the PDF?</summary>
+          <p>Yes. Edit text changes words already present in the document and reuses the fonts embedded in the file, so the result matches the paragraph around it. Add text drops a new text box anywhere on the page, which is what you want on a flat scan that has no real text in it.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary>How do I sign a PDF?</summary>
+          <p>Open the Sign tool, then draw your signature with a mouse, trackpad or finger, type it in a handwriting face, or upload a photo of one you already have. Place it, resize it, export. The signature is kept in your browser only, so the next document takes a single click.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary>Does redaction actually remove the text?</summary>
+          <p>Yes, and this is the part most tools get wrong. Redaction deletes the underlying characters from the file rather than drawing a black rectangle on top of them. Text removed this way cannot be selected, copied or searched in the exported PDF — which is the whole difference between redacting something and merely hiding it.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary>Will a converted file look exactly like the original?</summary>
+          <p>Usually close, never guaranteed, and anyone promising otherwise is overselling. Converting between formats is lossy by nature: a PDF describes a fixed page while a Word file describes flowing text, and the two do not map onto each other perfectly. Plain layouts, headings and images survive well; complex multi-column pages and unusual fonts less so. Check the result before you rely on it.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary>Which browsers and devices does it work on?</summary>
+          <p>Any current browser on Windows, macOS, Linux, Android or iOS — Chrome, Edge, Firefox and Safari are all fine. It works on a phone, though the editor has a lot of tools and is more comfortable on a larger screen.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary>Can I use it without an internet connection?</summary>
+          <p>Once the page has loaded, yes. You can disconnect and keep editing, because nothing here needs the network to do its job. Only the first load needs a connection.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+
+</main>
+
+<!-- ── footer, identical on every page ──────────────── -->
+<footer class="site-foot">
+  <div class="sf-in">
+    <div class="sf-brand">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+        <path d="M3 4a3 3 0 0 1 3-3h13.5L29 10.5V28a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V4z" fill="#2563EB"/>
+        <path d="M19.5 1 29 10.5h-6.5a3 3 0 0 1-3-3V1z" fill="#1D4ED8"/>
+        <path d="M16 15.5v9M11.5 20h9" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <b>Quire</b>
+        <span>A free PDF editor, converter and form library that runs in your browser.</span>
+      </div>
+    </div>
+
+    <nav class="sf-nav">
+      <a href="./">Home</a>
+      <a href="./editor.html">Editor</a>
+      <a href="./#converter">Converter</a>
+      <a href="./forms.html">Forms</a>
+    </nav>
+
+    <a class="sf-author" href="https://uz-or.com/" target="_blank" rel="noopener">
+      <span class="sf-ico">
+        <svg viewBox="0 0 64 64"><rect width="64" height="64" fill="#0a0a0a"/><polygon fill="#fff" points="12,52 12,12 24,12 40,36 40,12 52,12 52,52 40,52 24,28 24,52"/></svg>
+      </span>
+      <span class="sf-txt">
+        <b>Mykhailo Nahreba</b>
+        <em>Author · see the portfolio</em>
+      </span>
+      <svg class="sf-arrow" viewBox="0 0 24 24"><path d="M7 17 17 7M8.5 7H17v8.5"/></svg>
+    </a>
+  </div>
+  <div class="sf-legal">
+    <span>© 2026 Quire · Built by Mykhailo Nahreba · Nothing you open here is uploaded anywhere.</span>
+    <span class="sf-links">
+      <a href="./privacy.html">Privacy Policy</a>
+      <a href="./terms.html">Terms of Use</a>
+    </span>
+  </div>
+</footer>
+
+<script type="module" src="./assets/index.js"></script>
+<script type="module" src="./assets/site.js"></script>
+</body>
+</html>
