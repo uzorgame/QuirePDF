@@ -81,7 +81,6 @@ const NOTE = {
   "md": "plain Markdown, the format READMEs and notes are written in",
   "txt": "unformatted plain text",
   "dxf": "a CAD drawing exchange format AutoCAD and its rivals share",
-  "dwg": "AutoCAD's native drawing format",
   "epub": "a reflowable ebook that adapts to any screen size",
   "video": "a video file",
   "mp4": "the most common video format"
@@ -109,7 +108,7 @@ export const FMT = {
   ai:F('AI','AI',TEA,'.ai'),
   html:F('HTML','HTML',TEA,'.html'), md:F('MD','MD',TEA,'.md'),
   txt:F('TXT','TXT',TEA,'.txt'),
-  dxf:F('DXF','DXF',SLA,'.dxf'), dwg:F('DWG','DWG',SLA,'.dwg'),
+  dxf:F('DXF','DXF',SLA,'.dxf'),
   epub:F('EPUB','EPUB',AMB,'.epub'),
   video:F('Video','VID',SLA,'.mp4'), mp4:F('MP4','MP4',SLA,'.mp4'),
 };
@@ -182,11 +181,10 @@ const LIVE = new Set([
   /* The 1997 binary PowerPoint: an OLE compound file with its own record
      stream. Text only, and it says so. */
   'ppt-to-pdf',
-  /* Deliberately absent: DWG, and only DWG. It is AutoCAD's own closed binary,
-     the last conversion on this list that cannot be done honestly in a browser,
-     and its page stays and says so rather than disappearing — people do turn up
-     holding one, and DXF, which every CAD program can export instead, is right
-     next to it.
+  /* Nothing is absent. Every conversion this site has a page for runs in the
+     tab, which is what the list above and the count on the front page both
+     mean now — and the reason the phrase "not built yet" no longer appears
+     anywhere in the product.
 
      html-to-pdf is here, but on narrower terms than the name suggests: it
      lays out the document's readable content, and does not run CSS. Rendering
@@ -206,9 +204,9 @@ export const isLive = (a, b) => LIVE.has(`${a}-to-${b}`);
    put Publisher itself out to pasture.
 
    A page that will never be built and that nobody wants is not a placeholder,
-   it is a dead end with a drop zone on it. DWG and PPT stayed, though they are
-   just as unreadable, because people genuinely arrive holding one and are
-   better served by a page that says so than by nothing at all. */
+   it is a dead end with a drop zone on it. DWG went the same way afterwards,
+   for the same reason: AutoCAD's own binary cannot be read here honestly, and
+   DXF — which every CAD program exports — has a working page instead. */
 export const CONVERSIONS = [
   /* ── from PDF ── */
   P('pdf','word','from',true), P('pdf','excel','from',true), P('pdf','pptx','from',true),
@@ -221,7 +219,7 @@ export const CONVERSIONS = [
   /* ── to PDF ── */
   P('image','pdf','to',true), P('word','pdf','to',true), P('jpg','pdf','to',true),
   P('png','pdf','to',true), P('excel','pdf','to',true), P('pptx','pdf','to',true),
-  P('dwg','pdf','to'), P('html','pdf','to'), P('powerpoint','pdf','to'),
+  P('html','pdf','to'), P('powerpoint','pdf','to'),
   P('odt','pdf','to'), P('epub','pdf','to'), P('pages','pdf','to'),
   P('heic','pdf','to'), P('wps','pdf','to'),
   P('csv','pdf','to'), P('txt','pdf','to'), P('ppt','pdf','to'),

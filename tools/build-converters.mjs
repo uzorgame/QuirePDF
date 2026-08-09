@@ -242,9 +242,12 @@ ${header('./', {section:'converter'})}
   <div class="fhero">
     <div class="wrap">
       <h1>Convert anything to PDF, and back</h1>
-      <p class="chero-sub">${LIVE_COUNT} conversions run in this tab today, out of ${CONVERSIONS.length} the
-        site has a page for &mdash; the rest say plainly that they are not built yet. Your file is
-        read by the browser and never sent anywhere.</p>
+      <p class="chero-sub">${LIVE_COUNT === CONVERSIONS.length
+        ? `All ${CONVERSIONS.length} conversions run in this tab. There is no page here that
+        takes a file and gives nothing back`
+        : `${LIVE_COUNT} conversions run in this tab today, out of ${CONVERSIONS.length} the
+        site has a page for &mdash; the rest say plainly that they are not built yet`}. Your file
+        is read by the browser and never sent anywhere.</p>
       <div class="fsearch">
         <svg viewBox="0 0 24 24"><circle cx="10.6" cy="10.6" r="6.6"/><path d="M20.5 20.5l-5.2-5.2"/></svg>
         <input id="cq" type="search" placeholder="Search a format — HEIC, DOCX, SVG…" aria-label="Search converters">
