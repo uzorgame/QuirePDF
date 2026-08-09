@@ -52,10 +52,8 @@ const NOTE = {
   "docx": "the modern Word format, editable in Word, Pages and Google Docs",
   "odt": "the OpenDocument text format used by LibreOffice",
   "rtf": "a plain rich-text format almost every word processor can open",
-  "hwp": "the Hancom Office format used across South Korea",
   "wps": "the WPS Office document format",
   "pages": "Apple's word processor format, which only opens on a Mac or iCloud",
-  "pub": "a Microsoft Publisher layout file",
   "excel": "a spreadsheet with live formulas and sortable columns",
   "xls": "the older binary Excel workbook format",
   "xlsx": "the modern Excel workbook format",
@@ -74,21 +72,17 @@ const NOTE = {
   "bmp": "an uncompressed Windows bitmap",
   "tiff": "a high-fidelity image format used in printing and archiving",
   "ico": "the icon format Windows and browser favicons need",
-  "psd": "a layered Photoshop document",
   "image": "a picture in any common format",
   "picture": "a picture in any common format",
   "svg": "a vector image that stays sharp at any size",
   "eps": "a vector format print shops and older design software expect",
   "ai": "an Adobe Illustrator vector drawing",
-  "cdr": "a CorelDRAW vector drawing",
   "html": "a web page with its markup and styling",
   "md": "plain Markdown, the format READMEs and notes are written in",
   "txt": "unformatted plain text",
   "dxf": "a CAD drawing exchange format AutoCAD and its rivals share",
   "dwg": "AutoCAD's native drawing format",
   "epub": "a reflowable ebook that adapts to any screen size",
-  "mobi": "the older Kindle ebook format",
-  "azw3": "the Kindle ebook format",
   "video": "a video file",
   "mp4": "the most common video format"
 };
@@ -99,8 +93,7 @@ export const FMT = {
   pdf:F('PDF','PDF',RED,'.pdf'),
   word:F('Word','DOC',BLU,'.docx'), docx:F('DOCX','DOCX',BLU,'.docx'),
   odt:F('ODT','ODT',BLU,'.odt'), rtf:F('RTF','RTF',BLU,'.rtf'),
-  hwp:F('HWP','HWP',BLU,'.hwp'), wps:F('WPS','WPS',BLU,'.wps'),
-  pages:F('Pages','PAGE',BLU,'.pages'), pub:F('PUB','PUB',BLU,'.pub'),
+  wps:F('WPS','WPS',BLU,'.wps'), pages:F('Pages','PAGE',BLU,'.pages'),
   excel:F('Excel','XLS',GRN,'.xlsx'), xls:F('XLS','XLS',GRN,'.xls'),
   xlsx:F('XLSX','XLSX',GRN,'.xlsx'), csv:F('CSV','CSV',GRN,'.csv'),
   pptx:F('PPTX','PPT',ORG,'.pptx'), ppt:F('PPT','PPT',ORG,'.ppt'),
@@ -110,15 +103,14 @@ export const FMT = {
   webp:F('WEBP','WEBP',PNK,'.webp'), avif:F('AVIF','AVIF',PNK,'.avif'),
   heic:F('HEIC','HEIC',PUR,'.heic'), gif:F('GIF','GIF',PNK,'.gif'),
   bmp:F('BMP','BMP',PUR,'.bmp'), tiff:F('TIFF','TIFF',PUR,'.tiff'),
-  ico:F('ICO','ICO',PNK,'.ico'), psd:F('PSD','PSD',PUR,'.psd'),
+  ico:F('ICO','ICO',PNK,'.ico'),
   image:F('Image','IMG',PUR,'.jpg'), picture:F('Picture','IMG',PUR,'.jpg'),
   svg:F('SVG','SVG',TEA,'.svg'), eps:F('EPS','EPS',TEA,'.eps'),
-  ai:F('AI','AI',TEA,'.ai'), cdr:F('CDR','CDR',TEA,'.cdr'),
+  ai:F('AI','AI',TEA,'.ai'),
   html:F('HTML','HTML',TEA,'.html'), md:F('MD','MD',TEA,'.md'),
   txt:F('TXT','TXT',TEA,'.txt'),
   dxf:F('DXF','DXF',SLA,'.dxf'), dwg:F('DWG','DWG',SLA,'.dwg'),
-  epub:F('EPUB','EPUB',AMB,'.epub'), mobi:F('MOBI','MOBI',AMB,'.mobi'),
-  azw3:F('AZW3','AZW3',AMB,'.azw3'),
+  epub:F('EPUB','EPUB',AMB,'.epub'),
   video:F('Video','VID',SLA,'.mp4'), mp4:F('MP4','MP4',SLA,'.mp4'),
 };
 
@@ -189,27 +181,39 @@ const LIVE = new Set([
 ]);
 export const isLive = (a, b) => LIVE.has(`${a}-to-${b}`);
 
+/* Eight pages were removed rather than left standing: PDF to PSD, Pages, MOBI
+   and AZW3, and HWP, CDR, PUB and EPS to SVG coming the other way.
+
+   Two reasons, and a page had to fail on both to go. It could never be built
+   here — PSD, CDR, PUB and HWP are closed binary formats, Apple has never
+   documented the format inside a .pages, and reading EPS means running
+   PostScript. And nobody is looking for it anyway: Amazon stopped accepting
+   MOBI in 2022 and now takes EPUB, which this does write, and Microsoft has
+   put Publisher itself out to pasture.
+
+   A page that will never be built and that nobody wants is not a placeholder,
+   it is a dead end with a drop zone on it. DWG and PPT stayed, though they are
+   just as unreadable, because people genuinely arrive holding one and are
+   better served by a page that says so than by nothing at all. */
 export const CONVERSIONS = [
   /* ── from PDF ── */
   P('pdf','word','from',true), P('pdf','excel','from',true), P('pdf','pptx','from',true),
   P('pdf','jpg','from',true), P('pdf','png','from',true), P('pdf','dxf','from',true),
   P('pdf','epub','from'), P('pdf','svg','from'), P('pdf','txt','from'),
   P('pdf','jpeg','from'), P('pdf','html','from'), P('pdf','image','from'),
-  P('pdf','pages','from'), P('pdf','picture','from'), P('pdf','tiff','from'),
-  P('pdf','psd','from'), P('pdf','xls','from'),
-  P('pdf','xlsx','from'), P('pdf','mobi','from'), P('pdf','bmp','from'),
-  P('pdf','rtf','from'), P('pdf','azw3','from'),
+  P('pdf','picture','from'), P('pdf','tiff','from'), P('pdf','xls','from'),
+  P('pdf','xlsx','from'), P('pdf','bmp','from'), P('pdf','rtf','from'),
 
   /* ── to PDF ── */
   P('image','pdf','to',true), P('word','pdf','to',true), P('jpg','pdf','to',true),
   P('png','pdf','to',true), P('excel','pdf','to',true), P('pptx','pdf','to',true),
   P('dwg','pdf','to'), P('html','pdf','to'), P('powerpoint','pdf','to'),
   P('odt','pdf','to'), P('epub','pdf','to'), P('pages','pdf','to'),
-  P('hwp','pdf','to'), P('heic','pdf','to'), P('wps','pdf','to'),
+  P('heic','pdf','to'), P('wps','pdf','to'),
   P('csv','pdf','to'), P('txt','pdf','to'), P('ppt','pdf','to'),
   P('tiff','pdf','to'), P('ai','pdf','to'), P('rtf','pdf','to'),
-  P('md','pdf','to'), P('svg','pdf','to'), P('pub','pdf','to'),
-  P('dxf','pdf','to'), P('cdr','pdf','to'),
+  P('md','pdf','to'), P('svg','pdf','to'),
+  P('dxf','pdf','to'),
 
   /* ── picture to picture ── */
   P('image','jpg','img',true), P('heic','jpg','img',true), P('png','jpg','img',true),
@@ -221,7 +225,7 @@ export const CONVERSIONS = [
   /* ── across families ── */
   P('image','word','other'), P('image','excel','other'), P('video','gif','other'),
   P('mp4','gif','other'), P('docx','jpg','other'), P('word','jpg','other'),
-  P('html','jpg','other'), P('svg','dxf','other'), P('eps','svg','other'),
+  P('html','jpg','other'), P('svg','dxf','other'),
 ];
 
 export const CONV_TABS = [
@@ -511,14 +515,19 @@ export function head({title, desc, url, prefix, extraCss = []}){
 <meta property="og:title" content="${title}">
 <meta property="og:description" content="${desc}">
 <!-- One card for the whole site, and an absolute URL because a link preview is
-     fetched by a crawler that has no page to resolve a relative path against. -->
-<meta property="og:image" content="${SITE}/og-image.png">
+     fetched by a crawler that has no page to resolve a relative path against.
+
+     The version is not decoration. Every chat app and social network caches a
+     preview by its image URL and will happily serve a year-old card; the count
+     printed on it had already gone stale twice before this was added. Bump it
+     whenever the artwork changes. -->
+<meta property="og:image" content="${SITE}/og-image.png?v=2">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${title}">
 <meta name="twitter:description" content="${desc}">
-<meta name="twitter:image" content="${SITE}/og-image.png">
+<meta name="twitter:image" content="${SITE}/og-image.png?v=2">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
