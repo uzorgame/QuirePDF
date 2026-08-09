@@ -701,7 +701,6 @@ export class BlockLayer {
     el.dataset['bold'] = String(bold);
     el.dataset['italic'] = String(italic);
 
-    const known = face ? this.faces.get(face) : null;
     const registered = face ? docFace(face) : null;
     const key = registered?.cssKey ?? '';
     if (face && key) {
@@ -710,7 +709,6 @@ export class BlockLayer {
       /* The document's cut carries its own weight; asking again doubles it. */
       el.style.fontWeight = '400';
       el.style.fontStyle = 'normal';
-      void known;
     } else {
       el.style.fontFamily = cssFamily(font);
       el.style.fontWeight = bold ? '700' : '400';
