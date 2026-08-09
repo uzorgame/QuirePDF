@@ -117,6 +117,48 @@ export async function pdfToText(bytes: Uint8Array): Promise<Blob> {
   return new Blob([text], {type: 'text/plain;charset=utf-8'});
 }
 
+/* The same words, in the format a word processor opens without asking.
+ *
+ * RTF rather than DOCX where the goal is only "editable text": it is one file
+ * of plain ASCII with no zip and no schema, every processor since 1987 reads
+ * it, and what a PDF can honestly give — the words and where the lines broke —
+ * fits it exactly. Anything past that (headings, tables, columns) is not in the
+ * PDF to recover, and markup that claims otherwise is markup that lies. */
+export async function pdfToRtf(bytes: Uint8Array): Promise<Blob> {
+  const text = await (await pdfToText(bytes)).text();
+
+  /* RTF is Latin-1 with escapes; anything above it goes out as a signed
+     16-bit \u escape with an ASCII stand-in behind it, which is what readers
+     that predate Unicode fall back to. */
+  const escape = (s: string) => {
+    let out = '';
+    for (const ch of s) {
+      const c = ch.codePointAt(0)!;
+      if (ch === '\\' || ch === '{' || ch === '}') out += '\\' + ch;
+      else if (c < 128) out += ch;
+      else if (c <= 0xffff) out += `\\u${c > 32767 ? c - 65536 : c}?`;
+      else {
+        /* Outside the basic plane RTF wants the surrogate pair, each escaped. */
+        const v = c - 0x10000;
+        const hi = 0xd800 + (v >> 10), lo = 0xdc00 + (v & 0x3ff);
+        out += `\\u${hi > 32767 ? hi - 65536 : hi}?\\u${lo > 32767 ? lo - 65536 : lo}?`;
+      }
+    }
+    return out;
+  };
+
+  const body = text.split('\n')
+    .map(line => (line.trim() ? escape(line) : ''))
+    .join('\\par\n');
+
+  const rtf = '{\\rtf1\\ansi\\ansicpg1252\\deff0'
+    + '{\\fonttbl{\\f0\\fswiss\\fcharset0 Helvetica;}}'
+    + '\\viewkind4\\uc1\\pard\\f0\\fs22\n'
+    + body
+    + '\\par\n}';
+  return new Blob([rtf], {type: 'application/rtf'});
+}
+
 /* ── PDF out ──────────────────────────────────────────────────────────── */
 
 /* One page per picture, sized to the picture rather than forced onto A4: a
@@ -133,6 +175,97 @@ export async function imagesToPdf(items: Array<{bytes: Uint8Array; kind: string}
   }
   if (doc.getPageCount() === 0) refuse('There was nothing to put in the PDF.');
   return new Blob([(await doc.save()).slice() as BlobPart], {type: 'application/pdf'});
+}
+
+/* Pages as canvases, for the encoders that live on the other side.
+ *
+ * EPS and GIF are written by hand in convert.js, from a canvas — the browser
+ * has no writer for either. Rather than move those encoders in here, or teach
+ * this module a second copy of them, the pages come out as canvases and the
+ * caller encodes them with the same code it uses for an ordinary picture.
+ *
+ * The caller must release each canvas: thirty A4 pages at 2× is about a
+ * gigabyte if they are all held at once, which is why the other walks in this
+ * file set width and height to zero as they go. */
+export async function pdfToCanvases(
+  bytes: Uint8Array, onPage?: (done: number, total: number) => void,
+): Promise<HTMLCanvasElement[]> {
+  const {task, doc} = await openPdf(bytes);
+  const out: HTMLCanvasElement[] = [];
+  try {
+    for (let n = 1; n <= doc.numPages; n++) {
+      const page = await doc.getPage(n);
+      const canvas = document.createElement('canvas');
+      await renderPage(page, canvas, {scale: 2, dpr: 1}).done;
+      out.push(canvas);
+      onPage?.(n, doc.numPages);
+      await new Promise(r => setTimeout(r, 0));
+    }
+  } finally {
+    await task.destroy().catch(() => {});
+  }
+  if (!out.length) refuse('That PDF has no pages.');
+  return out;
+}
+
+/* An Illustrator file has been a PDF since version 9.
+ *
+ * Adobe writes AI as a PDF with its own editable artwork tucked into a private
+ * stream that only Illustrator reads; every reader in the world already opens
+ * the file, and the only thing standing between it and a .pdf extension is the
+ * extension. So this does not convert anything — it checks that the claim is
+ * true and re-saves through pdf-lib, which drops the private section and leaves
+ * a clean PDF. An older, PostScript-era .ai is refused rather than mangled. */
+export async function aiToPdf(bytes: Uint8Array): Promise<Blob> {
+  const head = new TextDecoder('latin1').decode(bytes.slice(0, 1024));
+  if (!head.startsWith('%PDF')) {
+    refuse(head.startsWith('%!PS')
+      ? 'That is a PostScript-era Illustrator file, saved before Adobe moved AI to PDF in '
+        + 'version 9. Open it in Illustrator and save as PDF.'
+      : 'That file does not look like an Illustrator document.');
+  }
+  const doc = await PDFDocument.load(bytes.slice(), {ignoreEncryption: true, updateMetadata: false});
+  if (doc.getPageCount() === 0) refuse('That Illustrator file has no artboards in it.');
+  return new Blob([(await doc.save()).slice() as BlobPart], {type: 'application/pdf'});
+}
+
+/* A TIFF is a container of pages, so it becomes a PDF of pages.
+ *
+ * No engine but Safari's decodes TIFF, which is why this cannot go through the
+ * ordinary picture route — the browser will not put one in an <img>. UTIF is
+ * already here for writing them; reading is the same library from the other
+ * end. Each page is turned into straight RGBA, painted onto a canvas and
+ * embedded as PNG, because pdf-lib takes PNG and JPEG and nothing else. */
+export async function tiffToPdf(bytes: Uint8Array): Promise<Blob> {
+  const UTIF = (await import('utif')).default;
+  let pages: import('utif').IFD[];
+  try {
+    pages = UTIF.decode(bytes.slice().buffer as ArrayBuffer);
+  } catch {
+    return refuse('That file is not a TIFF the decoder could read.');
+  }
+  if (!pages.length) refuse('That TIFF has no pages in it.');
+
+  const items: Array<{bytes: Uint8Array; kind: string}> = [];
+  for (const ifd of pages) {
+    UTIF.decodeImage(bytes.slice().buffer as ArrayBuffer, ifd, pages);
+    const rgba = UTIF.toRGBA8(ifd);
+    const w = ifd.width, h = ifd.height;
+    if (!w || !h || !rgba?.length) continue;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return refuse('Canvas 2D is unavailable in this browser.');
+    ctx.putImageData(new ImageData(new Uint8ClampedArray(rgba), w, h), 0, 0);
+
+    const png = await new Promise<Blob | null>(r => canvas.toBlob(r, 'image/png'));
+    if (png) items.push({bytes: new Uint8Array(await png.arrayBuffer()), kind: 'png'});
+    canvas.width = canvas.height = 0;
+  }
+  if (!items.length) refuse('None of the pages in that TIFF could be decoded.');
+  return imagesToPdf(items);
 }
 
 /* Plain text onto pages. Wrapped by measuring the font rather than by counting

@@ -411,7 +411,7 @@ async function toSvg(canvas) {
 
 const EXT = {jpg: 'jpg', jpeg: 'jpg', png: 'png', webp: 'webp', gif: 'gif',
              ico: 'ico', eps: 'eps', svg: 'svg', avif: 'avif', bmp: 'bmp',
-             pdf: 'pdf', txt: 'txt', image: 'jpg', picture: 'jpg'};
+             pdf: 'pdf', txt: 'txt', rtf: 'rtf', image: 'jpg', picture: 'jpg'};
 
 /* The heavy module carries pdf.js, pdf-lib and the HEIC decoder. It is fetched
    the first time a conversion actually needs one and never on a page that
@@ -421,8 +421,11 @@ const engine = async () => (heavy ??= await import('./convert-engine.js'));
 
 /* Anything that is not a picture in and a picture out. */
 const TEXTUAL = {txt: 'text', md: 'text', csv: 'csv'};
-/* Read as bytes rather than as text, and handed to a parser of their own. */
-const BINARY_IN = {excel: 'excel', xls: 'excel', xlsx: 'excel', epub: 'epub'};
+/* Read as bytes rather than as text, and handed to a parser of their own.
+   TIFF and AI are here because no browser will put either in an <img>: one
+   needs a decoder of its own, and the other is a PDF wearing another suffix. */
+const BINARY_IN = {excel: 'excel', xls: 'excel', xlsx: 'excel', epub: 'epub',
+                   tiff: 'tiff', ai: 'ai'};
 
 export async function convert(file, src, dst, onStep) {
   /* ── the PDF and document routes ── */
@@ -471,10 +474,34 @@ async function fromPdf(file, dst, onStep) {
 
   if (dst === 'txt') return eng.pdfToText(bytes);
   if (dst === 'html') return eng.pdfToHtml(bytes, base);
+  if (dst === 'rtf') return eng.pdfToRtf(bytes);
   if (dst === 'xls' || dst === 'xlsx') {
     const {blob, rows} = await eng.pdfToSheet(bytes, dst);
     blob.rows = rows;
     return blob;
+  }
+
+  /* EPS and GIF have no browser writer, and ours takes a canvas. The pages come
+     back as canvases and go through the very encoders an ordinary picture uses,
+     so a page and a photograph are written by the same code. */
+  if (dst === 'eps' || dst === 'gif') {
+    const canvases = await eng.pdfToCanvases(bytes, onStep);
+    const pad = String(canvases.length).length;
+    const sheets = [];
+    for (const [i, canvas] of canvases.entries()) {
+      const blob = dst === 'eps' ? await toEps(canvas, false, file) : await toGif(canvas);
+      sheets.push({
+        name: canvases.length === 1
+          ? `${base}.${dst}`
+          : `${base}-${String(i + 1).padStart(pad, '0')}.${dst}`,
+        blob,
+      });
+      canvas.width = canvas.height = 0;
+    }
+    if (sheets.length === 1) return sheets[0].blob;
+    const bundle = await eng.zip(sheets);
+    bundle.multi = sheets.length;
+    return bundle;
   }
 
   /* Three encoders behind one shape. BMP and TIFF have no browser writer so
@@ -501,8 +528,12 @@ async function toPdf(file, src) {
 
   if (BINARY_IN[src]) {
     const bytes = new Uint8Array(await file.arrayBuffer());
-    if (BINARY_IN[src] === 'excel') return eng.excelToPdf(bytes);
-    return eng.epubToPdf(bytes);
+    switch (BINARY_IN[src]) {
+      case 'excel': return eng.excelToPdf(bytes);
+      case 'tiff':  return eng.tiffToPdf(bytes);
+      case 'ai':    return eng.aiToPdf(bytes);
+      default:      return eng.epubToPdf(bytes);
+    }
   }
 
   if (TEXTUAL[src]) {

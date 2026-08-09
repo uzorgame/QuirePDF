@@ -154,6 +154,13 @@ const LIVE = new Set([
   'excel-to-pdf',
   /* JSZip */
   'epub-to-pdf',
+  /* UTIF from the reading end — no engine but Safari's decodes TIFF, so the
+     picture route cannot touch it and it needs a decoder of its own */
+  'tiff-to-pdf',
+  /* Not a conversion at all: an Illustrator file has been a PDF since v9 */
+  'ai-to-pdf',
+  /* pdf.js out, our own writers in: RTF is text, EPS and GIF are canvases */
+  'pdf-to-rtf', 'pdf-to-eps', 'pdf-to-gif',
   /* Deliberately absent: html-to-pdf, because printing markup as text is not
      what anyone means by it and rendering a page properly needs a browser
      engine we do not control; tiff-to-pdf, because no engine but Safari decodes
