@@ -411,7 +411,8 @@ async function toSvg(canvas) {
 
 const EXT = {jpg: 'jpg', jpeg: 'jpg', png: 'png', webp: 'webp', gif: 'gif',
              ico: 'ico', eps: 'eps', svg: 'svg', avif: 'avif', bmp: 'bmp',
-             pdf: 'pdf', txt: 'txt', rtf: 'rtf', image: 'jpg', picture: 'jpg'};
+             pdf: 'pdf', txt: 'txt', rtf: 'rtf', word: 'docx', docx: 'docx',
+             image: 'jpg', picture: 'jpg'};
 
 /* The heavy module carries pdf.js, pdf-lib and the HEIC decoder. It is fetched
    the first time a conversion actually needs one and never on a page that
@@ -425,7 +426,10 @@ const TEXTUAL = {txt: 'text', md: 'text', csv: 'csv'};
    TIFF and AI are here because no browser will put either in an <img>: one
    needs a decoder of its own, and the other is a PDF wearing another suffix. */
 const BINARY_IN = {excel: 'excel', xls: 'excel', xlsx: 'excel', epub: 'epub',
-                   tiff: 'tiff', ai: 'ai'};
+                   tiff: 'tiff', ai: 'ai',
+                   /* A .docx is a zip of XML; WPS Office writes the same thing
+                      under its own extension, so it reads through the same door. */
+                   word: 'docx', docx: 'docx', wps: 'docx'};
 
 export async function convert(file, src, dst, onStep) {
   /* ── the PDF and document routes ── */
@@ -447,6 +451,15 @@ export async function convert(file, src, dst, onStep) {
 
   const canvas = await toCanvas(file, kind);
   guardSize(canvas);
+
+  /* A picture into a Word file. It goes through the engine rather than the
+     switch below, because the output is a zip of XML and not a re-encode of
+     the canvas — and because the engine is where JSZip already lives. */
+  if (dst === 'word') {
+    const {imageToWord} = await engine();
+    const png = new Uint8Array(await (await blobOf(canvas, 'image/png')).arrayBuffer());
+    return imageToWord(png, 'png', canvas.width, canvas.height);
+  }
 
   switch (dst) {
     case 'jpg': case 'jpeg': return blobOf(matte(canvas), 'image/jpeg', 0.92);
@@ -475,6 +488,7 @@ async function fromPdf(file, dst, onStep) {
   if (dst === 'txt') return eng.pdfToText(bytes);
   if (dst === 'html') return eng.pdfToHtml(bytes, base);
   if (dst === 'rtf') return eng.pdfToRtf(bytes);
+  if (dst === 'word') return eng.pdfToWord(bytes);
   if (dst === 'xls' || dst === 'xlsx') {
     const {blob, rows} = await eng.pdfToSheet(bytes, dst);
     blob.rows = rows;
@@ -507,6 +521,7 @@ async function toPdf(file, src) {
     const bytes = new Uint8Array(await file.arrayBuffer());
     switch (BINARY_IN[src]) {
       case 'excel': return eng.excelToPdf(bytes);
+      case 'docx':  return eng.docxToPdf(bytes);
       case 'tiff':  return eng.tiffToPdf(bytes);
       case 'ai':    return eng.aiToPdf(bytes);
       default:      return eng.epubToPdf(bytes);

@@ -159,6 +159,9 @@ const LIVE = new Set([
   'tiff-to-pdf',
   /* Not a conversion at all: an Illustrator file has been a PDF since v9 */
   'ai-to-pdf',
+  /* JSZip again — a .docx is a zip of XML, read and written the same way an
+     EPUB is, and WPS Office writes the same package under its own extension */
+  'pdf-to-word', 'word-to-pdf', 'wps-to-pdf', 'image-to-word',
   /* pdf.js out, our own writer in — the words and their line breaks are what
      a PDF can honestly give, and every processor since 1987 opens an RTF */
   'pdf-to-rtf',

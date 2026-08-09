@@ -280,6 +280,167 @@ export async function textToPdf(text: string, mono = false): Promise<Blob> {
   return new Blob([(await doc.save()).slice() as BlobPart], {type: 'application/pdf'});
 }
 
+/* ── Word ─────────────────────────────────────────────────────────────── */
+
+/* A .docx is a zip of XML, which is the only reason this is possible at all in
+ * a browser: JSZip is already here for EPUB, and the rest is markup.
+ *
+ * What goes in is what a PDF can honestly give — the words and where the lines
+ * broke. A PDF has no headings, no lists and no tables to recover; it has
+ * glyphs at coordinates. Writing <w:pStyle w:val="Heading1"/> around a line
+ * because it happened to be short and bold would be inventing structure, and
+ * the document would be wrong in a way that is worse than plain, because it
+ * would look deliberate. So: paragraphs, in order, in a real Word file. */
+const XML_ESC = (s: string) => s
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  /* Control characters are illegal in XML 1.0 and Word refuses the whole file
+     rather than the character — a single stray 0x0C from a PDF would otherwise
+     cost the entire conversion. */
+  .replace(/[ --]/g, '');
+
+const DOCX_TYPES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+<Default Extension="xml" ContentType="application/xml"/>
+<Default Extension="png" ContentType="image/png"/>
+<Default Extension="jpeg" ContentType="image/jpeg"/>
+<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+</Types>`;
+
+const DOCX_RELS = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+</Relationships>`;
+
+const W_NS = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"';
+
+/** Wraps a finished `<w:body>` in the four parts a reader needs to open it. */
+async function packDocx(body: string, extra: Array<{path: string; data: Uint8Array | string}> = []) {
+  const JSZip = (await import('jszip')).default;
+  const zip = new JSZip();
+  zip.file('[Content_Types].xml', DOCX_TYPES);
+  zip.file('_rels/.rels', DOCX_RELS);
+  zip.file('word/document.xml',
+    `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n`
+    + `<w:document ${W_NS} xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" `
+    + `xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" `
+    + `xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" `
+    + `xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">`
+    + `<w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/>`
+    + `<w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134"/></w:sectPr></w:body></w:document>`);
+  for (const {path, data} of extra) zip.file(path, data as never);
+  const out = await zip.generateAsync({type: 'uint8array', compression: 'DEFLATE'});
+  return new Blob([out.slice() as BlobPart], {
+    type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  });
+}
+
+export async function pdfToWord(bytes: Uint8Array): Promise<Blob> {
+  const text = await (await pdfToText(bytes)).text();
+  const body = text.split(/\r?\n/).map(line => {
+    const t = XML_ESC(line);
+    /* xml:space="preserve" or Word eats leading indentation, which is the one
+       piece of layout a text dump actually carries. */
+    return t.trim()
+      ? `<w:p><w:r><w:t xml:space="preserve">${t}</w:t></w:r></w:p>`
+      : '<w:p/>';
+  }).join('');
+  return packDocx(body);
+}
+
+/* A picture in a Word file, sized to the page rather than to its pixels: a
+   4000-pixel photograph placed at its natural size is a document eleven pages
+   wide, which is what every naive image-to-Word converter produces. */
+export async function imageToWord(
+  image: Uint8Array, kind: 'png' | 'jpeg', width: number, height: number,
+): Promise<Blob> {
+  /* EMUs — English Metric Units, 914400 to the inch, which is how Office
+     measures everything. The text column of the page above is 6.27 inches. */
+  const EMU = 914400;
+  const maxW = 6.27 * EMU;
+  const scale = Math.min(1, maxW / (width / 96 * EMU));
+  const cx = Math.round((width / 96) * EMU * scale);
+  const cy = Math.round((height / 96) * EMU * scale);
+  const ext = kind === 'png' ? 'png' : 'jpeg';
+
+  const rels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.${ext}"/>
+</Relationships>`;
+
+  const body = `<w:p><w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0">`
+    + `<wp:extent cx="${cx}" cy="${cy}"/><wp:docPr id="1" name="Picture 1"/>`
+    + `<a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">`
+    + `<pic:pic><pic:nvPicPr><pic:cNvPr id="0" name="image1.${ext}"/><pic:cNvPicPr/></pic:nvPicPr>`
+    + `<pic:blipFill><a:blip r:embed="rId1"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>`
+    + `<pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${cx}" cy="${cy}"/></a:xfrm>`
+    + `<a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic>`
+    + `</a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>`;
+
+  return packDocx(body, [
+    {path: 'word/_rels/document.xml.rels', data: rels},
+    {path: `word/media/image1.${ext}`, data: image},
+  ]);
+}
+
+/* The other direction. Word's own markup is read rather than guessed at: a
+ * paragraph is <w:p>, a run of like-styled text is <w:r>, and the text itself
+ * is <w:t>. Everything between them — revision marks, bookmarks, proofing
+ * errors — is skipped by walking the tree instead of stripping tags with a
+ * regular expression, which is what turns a tracked-changes document into
+ * nonsense.
+ *
+ * A tab is a tab and a break is a line break, both of which carry meaning that
+ * the text alone does not. */
+export async function docxToPdf(bytes: Uint8Array): Promise<Blob> {
+  const JSZip = (await import('jszip')).default;
+  let zip;
+  try {
+    zip = await JSZip.loadAsync(bytes);
+  } catch {
+    return refuse('That file could not be opened. A .docx is a zip archive, and this one '
+      + 'does not unpack — an older .doc from before Word 2007 is a different format '
+      + 'entirely and has to be saved as .docx first.');
+  }
+
+  const main = zip.file('word/document.xml');
+  if (!main) {
+    return refuse('That zip is not a Word document — it has no word/document.xml in it.');
+  }
+  const xml = await main.async('string');
+  const doc = new DOMParser().parseFromString(xml, 'application/xml');
+  if (doc.querySelector('parsererror')) refuse('The document markup inside that file is not valid XML.');
+
+  const W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+  const paragraphs: string[] = [];
+  for (const p of Array.from(doc.getElementsByTagNameNS(W, 'p'))) {
+    let line = '';
+    /* Depth-first over the paragraph's own children, so a run inside a
+       hyperlink or a smart-tag is picked up and one inside a deleted revision
+       is not. */
+    const walk = (node: Element) => {
+      for (const child of Array.from(node.children)) {
+        const name = child.localName;
+        if (name === 'del' || name === 'instrText') continue;
+        if (name === 't') line += child.textContent ?? '';
+        else if (name === 'tab') line += '\t';
+        else if (name === 'br') line += '\n';
+        else walk(child);
+      }
+    };
+    walk(p);
+    paragraphs.push(line);
+  }
+
+  const text = paragraphs.join('\n').replace(/\n{3,}/g, '\n\n');
+  if (!text.trim()) {
+    refuse('That document has no text in it. If its content is images, convert those '
+      + 'to PDF instead.');
+  }
+  return textToPdf(text);
+}
+
 /* A CSV becomes a table rather than a wall of commas — which is the only
    reason to put one in a PDF at all. */
 export async function csvToPdf(text: string): Promise<Blob> {
