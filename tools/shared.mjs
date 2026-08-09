@@ -484,9 +484,15 @@ export function head({title, desc, url, prefix, extraCss = []}){
 <meta property="og:site_name" content="Quire">
 <meta property="og:title" content="${title}">
 <meta property="og:description" content="${desc}">
+<!-- One card for the whole site, and an absolute URL because a link preview is
+     fetched by a crawler that has no page to resolve a relative path against. -->
+<meta property="og:image" content="${SITE}/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${title}">
 <meta name="twitter:description" content="${desc}">
+<meta name="twitter:image" content="${SITE}/og-image.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

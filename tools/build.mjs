@@ -119,8 +119,10 @@ syncFaqSchema('index.html');
 
 /* ── 4. sitemap ───────────────────────────────────────────────────────── */
 
-const PRIORITY = {'':1.0, 'editor.html':0.9, 'forms.html':0.9, 'privacy.html':0.3, 'terms.html':0.3};
-const FREQ     = {'forms.html':'weekly', 'privacy.html':'yearly', 'terms.html':'yearly'};
+const PRIORITY = {'':1.0, 'editor.html':0.9, 'converter.html':0.9, 'forms.html':0.9,
+                  'privacy.html':0.3, 'terms.html':0.3};
+const FREQ     = {'forms.html':'weekly', 'converter.html':'weekly',
+                  'privacy.html':'yearly', 'terms.html':'yearly'};
 
 /* Derived from what is actually on disk, so a page cannot be added without
    appearing here. The date comes from the build, not from a literal — a
@@ -129,9 +131,14 @@ const stamp = new Date(process.env.SOURCE_DATE_EPOCH
   ? Number(process.env.SOURCE_DATE_EPOCH) * 1000 : Date.now())
   .toISOString().slice(0, 10);
 
+/* Every page at the root is listed by hand, because the two directories below
+   are generated and this handful is not. converter.html was the one missing:
+   the hub the seventy-four conversion pages all link back to, absent from the
+   sitemap while every page under it was in. */
 const routes = [
   '',
   'editor.html',
+  'converter.html',
   'forms.html',
   'privacy.html',
   'terms.html',
