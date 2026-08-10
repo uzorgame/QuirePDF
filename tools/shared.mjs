@@ -78,7 +78,6 @@ const NOTE = {
   "eps": "a vector format print shops and older design software expect",
   "ai": "an Adobe Illustrator vector drawing",
   "html": "a web page with its markup and styling",
-  "md": "plain Markdown, the format READMEs and notes are written in",
   "txt": "unformatted plain text",
   "dxf": "a CAD drawing exchange format AutoCAD and its rivals share",
   "epub": "a reflowable ebook that adapts to any screen size",
@@ -106,7 +105,7 @@ export const FMT = {
   image:F('Image','IMG',PUR,'.jpg'), picture:F('Picture','IMG',PUR,'.jpg'),
   svg:F('SVG','SVG',TEA,'.svg'), eps:F('EPS','EPS',TEA,'.eps'),
   ai:F('AI','AI',TEA,'.ai'),
-  html:F('HTML','HTML',TEA,'.html'), md:F('MD','MD',TEA,'.md'),
+  html:F('HTML','HTML',TEA,'.html'),
   txt:F('TXT','TXT',TEA,'.txt'),
   dxf:F('DXF','DXF',SLA,'.dxf'),
   epub:F('EPUB','EPUB',AMB,'.epub'),
@@ -140,7 +139,7 @@ const LIVE = new Set([
   'pdf-to-xls','pdf-to-xlsx','pdf-to-excel',
   /* pdf-lib */
   'image-to-pdf','jpg-to-pdf','png-to-pdf','svg-to-pdf',
-  'txt-to-pdf','md-to-pdf','csv-to-pdf',
+  'txt-to-pdf','csv-to-pdf',
   /* SheetJS */
   'excel-to-pdf',
   /* JSZip */
@@ -206,7 +205,15 @@ export const isLive = (a, b) => LIVE.has(`${a}-to-${b}`);
    A page that will never be built and that nobody wants is not a placeholder,
    it is a dead end with a drop zone on it. DWG went the same way afterwards,
    for the same reason: AutoCAD's own binary cannot be read here honestly, and
-   DXF — which every CAD program exports — has a working page instead. */
+   DXF — which every CAD program exports — has a working page instead.
+
+   Markdown to PDF was removed on a different ground, and the more interesting
+   one: it ran. It accepted the file, produced a PDF, and never failed. What it
+   actually did was print the source verbatim in a monospaced face, so the page
+   still said "# Heading" and "**bold**" out loud — every mark intact and none
+   of its meaning. A conversion that returns a plausible file nobody wanted is
+   worse than one that refuses, because nothing about it looks wrong until
+   somebody reads the result. Better gone than quietly disappointing. */
 export const CONVERSIONS = [
   /* ── from PDF ── */
   P('pdf','word','from',true), P('pdf','excel','from',true), P('pdf','pptx','from',true),
@@ -224,7 +231,7 @@ export const CONVERSIONS = [
   P('heic','pdf','to'), P('wps','pdf','to'),
   P('csv','pdf','to'), P('txt','pdf','to'), P('ppt','pdf','to'),
   P('tiff','pdf','to'), P('ai','pdf','to'), P('rtf','pdf','to'),
-  P('md','pdf','to'), P('svg','pdf','to'),
+  P('svg','pdf','to'),
   P('dxf','pdf','to'),
 
   /* ── picture to picture ── */

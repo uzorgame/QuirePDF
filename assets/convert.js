@@ -152,32 +152,57 @@ const blobOf = (canvas, type, q) => new Promise((ok, no) =>
 
 /* ICO is a tiny header followed by a whole PNG. Windows has accepted PNG-in-ICO
    since Vista, which saves writing a BMP encoder and a mask plane. */
-async function toIco(canvas) {
-  const side = Math.min(256, Math.max(canvas.width, canvas.height));
-  const square = document.createElement('canvas');
-  square.width = square.height = side;
-  const ctx = square.getContext('2d');
-  /* Letterboxed rather than stretched: an icon of a squashed logo is worse
-     than an icon with a little space around it. */
-  const s = Math.min(side / canvas.width, side / canvas.height);
-  const w = Math.round(canvas.width * s), h = Math.round(canvas.height * s);
-  ctx.drawImage(canvas, (side - w) / 2, (side - h) / 2, w, h);
+/* An ICO carries several sizes, and Windows picks whichever fits the place it
+   is drawing: 16 in a title bar, 32 on the desktop, 48 in a list, 256 for a
+   large tile. This used to write only the largest, which is a file Windows
+   accepts and then downsamples itself — a 256-pixel logo squeezed into 16
+   pixels by a general-purpose filter, which is exactly the smudge people are
+   trying to avoid by making an icon in the first place. Each size is now
+   drawn from the source at that size instead.
 
-  const png = new Uint8Array(await (await blobOf(square, 'image/png')).arrayBuffer());
-  const out = new Uint8Array(22 + png.length);
+   Sizes larger than the source are skipped rather than upscaled: an icon
+   invented out of pixels that were never there is worse than one Windows
+   scales up itself, and the entry would only claim detail it does not have. */
+const ICO_SIZES = [16, 32, 48, 64, 128, 256];
+
+async function toIco(canvas) {
+  const longest = Math.max(canvas.width, canvas.height);
+  const wanted = ICO_SIZES.filter(s => s <= longest);
+  if (!wanted.length) wanted.push(ICO_SIZES.find(s => s >= longest) ?? 16);
+
+  const images = [];
+  for (const side of wanted) {
+    const square = document.createElement('canvas');
+    square.width = square.height = side;
+    const ctx = square.getContext('2d');
+    /* Letterboxed rather than stretched: an icon of a squashed logo is worse
+       than an icon with a little space around it. */
+    const s = Math.min(side / canvas.width, side / canvas.height);
+    const w = Math.round(canvas.width * s), h = Math.round(canvas.height * s);
+    ctx.drawImage(canvas, Math.round((side - w) / 2), Math.round((side - h) / 2), w, h);
+    images.push({side, png: new Uint8Array(await (await blobOf(square, 'image/png')).arrayBuffer())});
+  }
+
+  const headSize = 6 + images.length * 16;
+  const out = new Uint8Array(headSize + images.reduce((n, i) => n + i.png.length, 0));
   const dv = new DataView(out.buffer);
-  dv.setUint16(0, 0, true);            // reserved
-  dv.setUint16(2, 1, true);            // type: icon
-  dv.setUint16(4, 1, true);            // one image
-  out[6] = side >= 256 ? 0 : side;     // 0 means 256
-  out[7] = side >= 256 ? 0 : side;
-  out[8] = 0;                          // palette
-  out[9] = 0;                          // reserved
-  dv.setUint16(10, 1, true);           // colour planes
-  dv.setUint16(12, 32, true);          // bits per pixel
-  dv.setUint32(14, png.length, true);
-  dv.setUint32(18, 22, true);          // offset
-  out.set(png, 22);
+  dv.setUint16(0, 0, true);              // reserved
+  dv.setUint16(2, 1, true);              // type: icon
+  dv.setUint16(4, images.length, true);
+  let at = headSize;
+  images.forEach(({side, png}, n) => {
+    const o = 6 + n * 16;
+    out[o] = side >= 256 ? 0 : side;     // 0 means 256
+    out[o + 1] = side >= 256 ? 0 : side;
+    out[o + 2] = 0;                      // palette
+    out[o + 3] = 0;                      // reserved
+    dv.setUint16(o + 4, 1, true);        // colour planes
+    dv.setUint16(o + 6, 32, true);       // bits per pixel
+    dv.setUint32(o + 8, png.length, true);
+    dv.setUint32(o + 12, at, true);
+    out.set(png, at);
+    at += png.length;
+  });
   return new Blob([out], {type: 'image/x-icon'});
 }
 
@@ -539,7 +564,7 @@ let heavy = null;
 const engine = async () => (heavy ??= await import('./convert-engine.js'));
 
 /* Anything that is not a picture in and a picture out. */
-const TEXTUAL = {txt: 'text', md: 'text', csv: 'csv'};
+const TEXTUAL = {txt: 'text', csv: 'csv'};
 /* Read as bytes rather than as text, and handed to a parser of their own.
    TIFF and AI are here because no browser will put either in an <img>: one
    needs a decoder of its own, and the other is a PDF wearing another suffix. */
@@ -709,7 +734,7 @@ async function toPdf(file, src) {
     const text = await file.text();
     if (!text.trim()) refuse('That file is empty, so there is nothing to put in a PDF.');
     if (src === 'csv') return csvToPdf(text);
-    return textToPdf(text, src === 'md');
+    return textToPdf(text);
   }
 
   const kind = await sniff(file);
