@@ -117,6 +117,32 @@ function syncFaqSchema(file){
 
 syncFaqSchema('index.html');
 
+/* The two numbers the front page quotes about itself.
+ *
+ * They were typed in by hand, and a hand-typed count is a promise that goes
+ * stale the first time a page is added or dropped — which happened three
+ * times in a week, twice reaching the live site before anyone noticed. Any
+ * link carrying data-count has its number rewritten here from what is
+ * actually on disk, so the page can only ever claim what it has. */
+function syncCounts(file) {
+  const path = join(ROOT, file);
+  let s = readFileSync(path, 'utf8');
+  const have = {
+    conversions: readdirSync(join(ROOT, 'convert')).filter(n => n.endsWith('.html')).length,
+    forms: readdirSync(join(ROOT, 'forms')).filter(n => n.endsWith('.html')).length,
+  };
+  let touched = 0;
+  for (const [key, n] of Object.entries(have)) {
+    const tag = new RegExp(`(data-count="${key}"[^>]*>)\\s*\\d+`, 'g');
+    if (!tag.test(s)) throw new Error(`${file}: nothing carries data-count="${key}"`);
+    s = s.replace(tag, (_, open) => { touched++; return `${open}${n}`; });
+  }
+  writeFileSync(path, s, 'utf8');
+  log(`${file} counts — ${have.conversions} conversions, ${have.forms} forms, ${touched} rewritten`);
+}
+
+syncCounts('index.html');
+
 /* ── 4. sitemap ───────────────────────────────────────────────────────── */
 
 const PRIORITY = {'':1.0, 'editor.html':0.9, 'converter.html':0.9, 'forms.html':0.9,

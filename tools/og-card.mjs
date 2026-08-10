@@ -91,16 +91,23 @@ write('with no server behind either.', M, 342, 62, 'SG', 3, '#ffffff');
 write('Edit the words a PDF already has — in the font it already carries.',
       M, 404, 26, 'INTER', 0.4, PALE);
 
-/* The counts, from the pages themselves. */
-const columns = [[String(CONVERSIONS), 'CONVERSIONS'], [String(FORMS), 'FILLABLE FORMS']];
+/* The counts, from the pages themselves, and three of the form numbers by
+   name. A total says how many there are and nothing about whether the one
+   somebody needs is among them; a W-9 in the preview answers that before they
+   click. These three are the most looked-for of the hundred and five. */
+const columns = [
+  [String(CONVERSIONS), 'CONVERSIONS', 46, 'SG', 2],
+  [String(FORMS), 'FILLABLE FORMS', 46, 'SG', 2],
+  ['W-9 · DS-11 · 1099-MISC', 'INCLUDING', 26, 'JBM', 0.6],
+];
 let x = M;
-columns.forEach(([n, label], i) => {
+columns.forEach(([n, label, size, family, track], i) => {
   if (i) {
     g.strokeStyle = FAINT;
     g.lineWidth = 1;
     g.beginPath(); g.moveTo(x - 40, 452); g.lineTo(x - 40, 516); g.stroke();
   }
-  const nw = write(n, x, 500, 46, 'SG', 2, '#ffffff');
+  const nw = write(n, x, 500, size, family, track, '#ffffff');
   const lw = write(label, x, 526, 15, 'JBM', 0.2, LABEL);
   x += Math.max(nw, lw) + 112;
 });
