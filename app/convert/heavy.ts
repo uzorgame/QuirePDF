@@ -470,7 +470,46 @@ export async function tablesToPdf(sheets: Array<{name: string; rows: string[][]}
      a column of vertical letters. */
   const size = cols > 4 ? {w: 841.89, h: 595.28} : {w: 595.28, h: 841.89};
   const M = 40, SIZE = 8.5, ROW = 15;
-  const colW = (size.w - M * 2) / cols;
+  const usable = size.w - M * 2;
+
+  /* Columns are sized to what is in them, not cut into equal slices.
+   *
+   * Equal slices are what a spreadsheet almost never wants: one column holds a
+   * sentence and four hold two-digit numbers, and dividing the page evenly
+   * starves the sentence while leaving the numbers swimming. On the W-9 read
+   * back out of a PDF it turned "Request for Taxpayer Identification Number
+   * and Certification" into "Request for T" while three neighbours sat empty.
+   *
+   * Each column asks for its widest cell and no more than half the page — one
+   * runaway paragraph must not squeeze every other column to nothing — and if
+   * the asks exceed the width they are scaled down together, so the ratio
+   * between them survives even when the space does not. */
+  const want: number[] = [];
+  for (let c = 0; c < cols; c++) {
+    let widest = 0;
+    for (const row of all) {
+      const cell = clean(row[c] ?? '');
+      if (cell) widest = Math.max(widest, font.widthOfTextAtSize(cell, SIZE));
+    }
+    want.push(Math.min(widest + 10, usable * 0.5));
+  }
+  const asked = want.reduce((a, b) => a + b, 0) || 1;
+  const MIN = 26;
+  const widths = asked <= usable
+    ? want.map(w => w + (usable - asked) / cols)
+    : want.map(w => Math.max(MIN, (w / asked) * usable));
+  /* Scaling with a floor can push the total back over the page, so anything
+     above the floor gives the overflow back in proportion. */
+  const over = widths.reduce((a, b) => a + b, 0) - usable;
+  if (over > 0) {
+    const slack = widths.reduce((a, b) => a + Math.max(0, b - MIN), 0) || 1;
+    for (let c = 0; c < cols; c++) {
+      const w = widths[c] ?? MIN;
+      widths[c] = Math.max(MIN, w - over * (Math.max(0, w - MIN) / slack));
+    }
+  }
+  const left: number[] = [];
+  widths.reduce((x, w, c) => { left[c] = x; return x + w; }, M);
 
   let page = doc.addPage([size.w, size.h]);
   let y = size.h - M;
@@ -492,10 +531,20 @@ export async function tablesToPdf(sheets: Array<{name: string; rows: string[][]}
       for (let c = 0; c < cols; c++) {
         let cell = clean(row[c] ?? '');
         const f = i === 0 ? bold : font;
+        const room = (widths[c] ?? MIN) - 6;
         /* Trimmed rather than wrapped: a table where one long cell pushes its
-           row three lines tall stops being a table you can scan. */
-        while (cell && f.widthOfTextAtSize(cell, SIZE) > colW - 8) cell = cell.slice(0, -1);
-        page.drawText(cell, {x: M + c * colW + 3, y: y - SIZE - 3, size: SIZE, font: f,
+           row three lines tall stops being a table you can scan.
+
+           But it is trimmed to an ellipsis, never silently. A cell cut mid-word
+           reads as the whole value — "Request for T" looks like the field is
+           simply called that — and a reader has no way to tell the difference
+           between a short entry and a truncated one without the mark. */
+        if (cell && f.widthOfTextAtSize(cell, SIZE) > room) {
+          const dots = f.widthOfTextAtSize('…', SIZE);
+          while (cell && f.widthOfTextAtSize(cell, SIZE) + dots > room) cell = cell.slice(0, -1);
+          cell = cell.replace(/[\s,.;:-]+$/, '') + '…';
+        }
+        page.drawText(cell, {x: (left[c] ?? M) + 3, y: y - SIZE - 3, size: SIZE, font: f,
                              color: rgb(0.09, 0.11, 0.15)});
       }
       page.drawLine({start: {x: M, y: y - ROW}, end: {x: size.w - M, y: y - ROW},
