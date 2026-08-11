@@ -285,6 +285,12 @@ const STYLE: Record<Kind, Style> = {
 const STANDARD: Record<Face, StandardFonts> = {
   sans: StandardFonts.Helvetica,
   bold: StandardFonts.HelveticaBold,
+  italic: StandardFonts.HelveticaOblique,
+  bolditalic: StandardFonts.HelveticaBoldOblique,
+  serif: StandardFonts.TimesRoman,
+  serifbold: StandardFonts.TimesRomanBold,
+  serifitalic: StandardFonts.TimesRomanItalic,
+  serifbolditalic: StandardFonts.TimesRomanBoldItalic,
   mono: StandardFonts.Courier,
 };
 

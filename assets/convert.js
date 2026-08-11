@@ -46,12 +46,23 @@ export async function sniff(file) {
 }
 
 /* The formats a page will accept, keyed by the slug's source half. `image`
-   means "any picture", which is exactly what the page promises. */
+   means "any picture", which is exactly what the page promises.
+ *
+ * A source whose key is not itself a file extension has to be listed here.
+ * Without an entry the fallback below hands back the key, and the picker is
+ * then built out of it — which is how `word-to-pdf` came to filter for `*.word`
+ * and hide every .docx on the machine. Drag and drop was unaffected, because
+ * the browser applies `accept` to the dialog only, so one route took the file
+ * and the other refused to show it. */
 const ACCEPTS = {
   image: ['jpg', 'png', 'webp', 'avif', 'gif', 'bmp', 'svg'],
   jpg: ['jpg'], jpeg: ['jpg'], jfif: ['jpg'],
   png: ['png'], webp: ['webp'], avif: ['avif'], svg: ['svg'],
   heic: ['heic'], gif: ['gif'], bmp: ['bmp'], tiff: ['tiff'],
+  /* "Word" is one thing to a reader, so the page keeps that name and the
+     picker takes both of the files it can mean. */
+  word: ['docx', 'doc'],
+  video: ['mp4'],
 };
 
 export const accepts = (src) => ACCEPTS[src] ?? [src];
@@ -568,6 +579,12 @@ const TEXTUAL = {txt: 'text', csv: 'csv'};
 /* Read as bytes rather than as text, and handed to a parser of their own.
    TIFF and AI are here because no browser will put either in an <img>: one
    needs a decoder of its own, and the other is a PDF wearing another suffix. */
+/* `PK\x03\x04` — the local file header a zip begins with. Used to tell the two
+   Word formats apart, which is the one place a source key covers both a zipped
+   and an unzipped format. */
+const looksZipped = (bytes) =>
+  bytes[0] === 0x50 && bytes[1] === 0x4b && bytes[2] === 0x03 && bytes[3] === 0x04;
+
 const BINARY_IN = {excel: 'excel', xls: 'excel', xlsx: 'excel', epub: 'epub',
                    tiff: 'tiff', ai: 'ai',
                    /* A .docx is a zip of XML; WPS Office writes the same thing
@@ -578,7 +595,7 @@ const BINARY_IN = {excel: 'excel', xls: 'excel', xlsx: 'excel', epub: 'epub',
                       `ppt` is the 1997 binary format and shares none of that:
                       an OLE compound file with its own record stream, read by
                       a parser written for it alone. */
-                   word: 'docx', docx: 'docx', wps: 'docx',
+                   word: 'docx', docx: 'docx', doc: 'docx', wps: 'docx',
                    pptx: 'pptx', powerpoint: 'pptx', ppt: 'ppt',
                    odt: 'odt', pages: 'pages',
                    rtf: 'rtf', html: 'html', dxf: 'dxf'};
@@ -716,7 +733,11 @@ async function toPdf(file, src) {
     const bytes = new Uint8Array(await file.arrayBuffer());
     switch (BINARY_IN[src]) {
       case 'excel': return eng.excelToPdf(bytes);
-      case 'docx':  return eng.docxToPdf(bytes);
+      /* "Word" is one name over two formats that share nothing: a .docx is a zip
+         of XML, a .doc is an OLE compound file. The extension is not evidence —
+         a .doc renamed to .docx is a thing people do, and the file itself says
+         which it is in its first two bytes. So the reader is chosen by looking. */
+      case 'docx':  return looksZipped(bytes) ? eng.docxToPdf(bytes) : eng.docToPdf(bytes);
       case 'pptx':  return eng.pptxToPdf(bytes);
       case 'ppt':   return eng.pptToPdf(bytes);
       case 'odt':   return eng.odtToPdf(bytes);

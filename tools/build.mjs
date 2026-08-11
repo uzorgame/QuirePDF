@@ -211,9 +211,24 @@ log(`sitemap.xml — ${routes.length} URLs`);
  * turns out to contain something outside Latin-1. Latin-only work never
  * downloads a byte of this. */
 {
+  /* The oblique and serif faces are here for the Word reader. It has real italic
+     runs to draw and cannot fake one, and it has to answer the font the document
+     asks for: a contract set in Times rendered in a sans face is the single most
+     visible way a conversion stops looking like the original. Neither is
+     available from the standard fourteen once the text leaves Latin-1, which a
+     Slovak or Ukrainian document does immediately.
+   *
+     All of them are still fetched only when a document needs them, so Latin-only
+     work downloads none of it. */
   const faces = [
     ['DejaVuSans.ttf', 'sans.ttf'],
     ['DejaVuSans-Bold.ttf', 'bold.ttf'],
+    ['DejaVuSans-Oblique.ttf', 'italic.ttf'],
+    ['DejaVuSans-BoldOblique.ttf', 'bolditalic.ttf'],
+    ['DejaVuSerif.ttf', 'serif.ttf'],
+    ['DejaVuSerif-Bold.ttf', 'serifbold.ttf'],
+    ['DejaVuSerif-Italic.ttf', 'serifitalic.ttf'],
+    ['DejaVuSerif-BoldItalic.ttf', 'serifbolditalic.ttf'],
     ['DejaVuSansMono.ttf', 'mono.ttf'],
   ];
   mkdirSync(join(ROOT, 'assets/fonts'), {recursive: true});

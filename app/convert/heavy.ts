@@ -384,63 +384,6 @@ export async function imageToWord(
   ]);
 }
 
-/* The other direction. Word's own markup is read rather than guessed at: a
- * paragraph is <w:p>, a run of like-styled text is <w:r>, and the text itself
- * is <w:t>. Everything between them — revision marks, bookmarks, proofing
- * errors — is skipped by walking the tree instead of stripping tags with a
- * regular expression, which is what turns a tracked-changes document into
- * nonsense.
- *
- * A tab is a tab and a break is a line break, both of which carry meaning that
- * the text alone does not. */
-export async function docxToPdf(bytes: Uint8Array): Promise<Blob> {
-  const JSZip = (await import('jszip')).default;
-  let zip;
-  try {
-    zip = await JSZip.loadAsync(bytes);
-  } catch {
-    return refuse('That file could not be opened. A .docx is a zip archive, and this one '
-      + 'does not unpack — an older .doc from before Word 2007 is a different format '
-      + 'entirely and has to be saved as .docx first.');
-  }
-
-  const main = zip.file('word/document.xml');
-  if (!main) {
-    return refuse('That zip is not a Word document — it has no word/document.xml in it.');
-  }
-  const xml = await main.async('string');
-  const doc = new DOMParser().parseFromString(xml, 'application/xml');
-  if (doc.querySelector('parsererror')) refuse('The document markup inside that file is not valid XML.');
-
-  const W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
-  const paragraphs: string[] = [];
-  for (const p of Array.from(doc.getElementsByTagNameNS(W, 'p'))) {
-    let line = '';
-    /* Depth-first over the paragraph's own children, so a run inside a
-       hyperlink or a smart-tag is picked up and one inside a deleted revision
-       is not. */
-    const walk = (node: Element) => {
-      for (const child of Array.from(node.children)) {
-        const name = child.localName;
-        if (name === 'del' || name === 'instrText') continue;
-        if (name === 't') line += child.textContent ?? '';
-        else if (name === 'tab') line += '\t';
-        else if (name === 'br') line += '\n';
-        else walk(child);
-      }
-    };
-    walk(p);
-    paragraphs.push(line);
-  }
-
-  const text = paragraphs.join('\n').replace(/\n{3,}/g, '\n\n');
-  if (!text.trim()) {
-    refuse('That document has no text in it. If its content is images, convert those '
-      + 'to PDF instead.');
-  }
-  return textToPdf(text);
-}
-
 /* A CSV becomes a table rather than a wall of commas — which is the only
    reason to put one in a PDF at all. */
 export async function csvToPdf(text: string): Promise<Blob> {
@@ -1130,4 +1073,6 @@ export {pdfToPptx} from './formats/pptxOut.ts';
 export {pdfToEpub} from './formats/epubOut.ts';
 export {imageToExcel} from './formats/imageExcel.ts';
 export {pptToPdf} from './formats/pptBinary.ts';
+export {docxToPdf, docxToModel} from './formats/docx.ts';
+export {docToPdf, docToModel} from './formats/docBinary.ts';
 export {pdfToSvgSheets, pdfToDxfSheets} from './formats/vector.ts';
