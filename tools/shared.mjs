@@ -518,9 +518,36 @@ ${AUTHOR('    ')}
 </footer>`;
 }
 
+/* Google Analytics, the same tag the rest of uz-or.com carries.
+ *
+ * It lives in the shared head rather than in each generator because there are a
+ * hundred and seventy-three pages here and they were all missing it: the domain's
+ * analytics showed a portfolio of seven pages and nothing of the part that
+ * actually gets the traffic. One place to put it is one place to remove it.
+ *
+ * Consent Mode v2, worded exactly as it is on the other pages so the two cannot
+ * drift: nothing here is used for advertising, so the ad signals stay denied. */
+const ANALYTICS = `<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HXXYPLC4ZM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('consent', 'default', {
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+    analytics_storage: 'granted'
+  });
+  gtag('js', new Date());
+  gtag('config', 'G-HXXYPLC4ZM');
+</script>
+`;
+
 export function head({title, desc, url, prefix, extraCss = []}){
   return `<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
+${ANALYTICS}
 
 <title>${title}</title>
 <meta name="description" content="${desc}">
