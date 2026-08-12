@@ -20,3 +20,6 @@ pnpm-debug.log*
 
 _t/
 *.scratch.*
+
+# Serena code-intelligence cache (project.yml is committed, cache is not)
+**/.serena/cache/
